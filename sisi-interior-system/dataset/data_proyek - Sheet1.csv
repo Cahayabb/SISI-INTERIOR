@@ -1,0 +1,111 @@
+jenis_ruangan,luas_ruangan,tingkat_kerumitan,durasi_pengerjaan,harga_proyek, spesifikasi_design,Area Layanan,Deskrpsi
+kamar_tidur,17,2,5,11200000,Japandi,Bogor,Transformasi kamar tidur dengan sentuhan Japandi di Bogor. Menghadirkan suasana hunian yang luas 18.0m² dengan detail estetik.
+ruang_tamu,3,3,8,23500000,Industrial,Depok,Transformasi ruang tamu dengan sentuhan Industrial di Depok. Menghadirkan suasana hunian yang luas 35.0m² dengan detail estetik.
+dapur,14,2,4,9800000,Scandinavian,Depok,Pengerjaan interior dapur bergaya Scandinavian untuk klien di Depok. Fokus pada efisiensi ruang 15.0m² dan kenyamanan maksimal.
+kantor,8,4,10,31500000,Modern,Depok,Pengerjaan interior kantor bergaya Modern untuk klien di Depok. Fokus pada efisiensi ruang 40.0m² dan kenyamanan maksimal.
+cafe,28,5,18,58000000,Ekletik / Colorful Minimalist,Bandung,Pengerjaan interior cafe bergaya Ekletik / Colorful Minimalist untuk klien di Bandung. Fokus pada efisiensi ruang 60.0m² dan kenyamanan maksimal.
+toko,13,3,12,34200000,Modern,Bogor,Desain toko bertema Modern yang berlokasi di Bogor. Area 45.0m² dirancang untuk menciptakan harmoni dan ketenangan.
+ruang_makan,24,2,6,15000000,Modern Minimalist,Tangerang,"Proyek Modern Minimalist pada ruang makan seluas 25.0m² di wilayah Tangerang, menggabungkan material premium dengan fungsi ruang yang cerdas."
+kamar_tidur,19,1,4,8700000,Japandi,Jakarta,Transformasi kamar tidur dengan sentuhan Japandi di Jakarta. Menghadirkan suasana hunian yang luas 20.0m² dengan detail estetik.
+ruang_tamu,29,3,7,21000000,Industrial,Jakarta,Pengerjaan interior ruang tamu bergaya Industrial untuk klien di Jakarta. Fokus pada efisiensi ruang 30.0m² dan kenyamanan maksimal.
+dapur,21,2,5,12500000,Scandinavian,Tangerang,"Proyek Scandinavian pada dapur seluas 22.0m² di wilayah Tangerang, menggabungkan material premium dengan fungsi ruang yang cerdas."
+kamar_tidur,23,2,6,13500000,Modern,Tangerang,Implementasi gaya Modern untuk kamar tidur di Tangerang. Mengoptimalkan lahan 24.0m² agar terlihat modern namun tetap fungsional.
+ruang_tamu,27,3,7,19800000,Ekletik / Colorful Minimalist,Depok,Transformasi ruang tamu dengan sentuhan Ekletik / Colorful Minimalist di Depok. Menghadirkan suasana hunian yang luas 28.0m² dengan detail estetik.
+dapur,17,2,5,10400000,Modern,Bogor,"Proyek Modern pada dapur seluas 18.0m² di wilayah Bogor, menggabungkan material premium dengan fungsi ruang yang cerdas."
+kantor,18,4,12,37200000,Modern Minimalist,Bogor,Pengerjaan interior kantor bergaya Modern Minimalist untuk klien di Bogor. Fokus pada efisiensi ruang 50.0m² dan kenyamanan maksimal.
+cafe,15,5,20,69500000,Japandi,Jakarta,Desain cafe bertema Japandi yang berlokasi di Jakarta. Area 75.0m² dirancang untuk menciptakan harmoni dan ketenangan.
+toko,6,3,9,26800000,Industrial,Depok,"Proyek Industrial pada toko seluas 38.0m² di wilayah Depok, menggabungkan material premium dengan fungsi ruang yang cerdas."
+ruang_makan,26,2,6,15800000,Scandinavian,Bandung,"Proyek Scandinavian pada ruang makan seluas 27.0m² di wilayah Bandung, menggabungkan material premium dengan fungsi ruang yang cerdas."
+kamar_tidur,15,1,3,7200000,Modern,Depok,"Proyek Modern pada kamar tidur seluas 16.0m² di wilayah Depok, menggabungkan material premium dengan fungsi ruang yang cerdas."
+ruang_tamu,10,4,11,33000000,Ekletik / Colorful Minimalist,Bandung,Implementasi gaya Ekletik / Colorful Minimalist untuk ruang tamu di Bandung. Mengoptimalkan lahan 42.0m² agar terlihat modern namun tetap fungsional.
+dapur,19,2,5,11800000,Modern,Bandung,Pengerjaan interior dapur bergaya Modern untuk klien di Bandung. Fokus pada efisiensi ruang 20.0m² dan kenyamanan maksimal.
+kantor,23,4,13,40200000,Modern Minimalist,Depok,Implementasi gaya Modern Minimalist untuk kantor di Depok. Mengoptimalkan lahan 55.0m² agar terlihat modern namun tetap fungsional.
+cafe,8,5,17,61200000,Japandi,Bandung,Pengerjaan interior cafe bergaya Japandi untuk klien di Bandung. Fokus pada efisiensi ruang 68.0m² dan kenyamanan maksimal.
+toko,16,3,11,35000000,Industrial,Bandung,Implementasi gaya Industrial untuk toko di Bandung. Mengoptimalkan lahan 48.0m² agar terlihat modern namun tetap fungsional.
+ruang_makan,29,2,7,17500000,Scandinavian,Bogor,"Proyek Scandinavian pada ruang makan seluas 30.0m² di wilayah Bogor, menggabungkan material premium dengan fungsi ruang yang cerdas."
+kamar_tidur,18,2,5,10200000,Modern,Bandung,Transformasi kamar tidur dengan sentuhan Modern di Bandung. Menghadirkan suasana hunian yang luas 19.0m² dengan detail estetik.
+ruang_tamu,4,3,8,24000000,Ekletik / Colorful Minimalist,Bandung,Transformasi ruang tamu dengan sentuhan Ekletik / Colorful Minimalist di Bandung. Menghadirkan suasana hunian yang luas 36.0m² dengan detail estetik.
+dapur,16,2,4,9900000,Modern,Jakarta,Desain dapur bertema Modern yang berlokasi di Jakarta. Area 17.0m² dirancang untuk menciptakan harmoni dan ketenangan.
+kantor,12,4,10,31800000,Modern Minimalist,Tangerang,Desain kantor bertema Modern Minimalist yang berlokasi di Tangerang. Area 44.0m² dirancang untuk menciptakan harmoni dan ketenangan.
+cafe,20,5,21,72000000,Japandi,Bandung,Desain cafe bertema Japandi yang berlokasi di Bandung. Area 80.0m² dirancang untuk menciptakan harmoni dan ketenangan.
+toko,9,3,10,29500000,Industrial,Bogor,Transformasi toko dengan sentuhan Industrial di Bogor. Menghadirkan suasana hunian yang luas 41.0m² dengan detail estetik.
+ruang_makan,25,2,6,14900000,Scandinavian,Jakarta,Pengerjaan interior ruang makan bergaya Scandinavian untuk klien di Jakarta. Fokus pada efisiensi ruang 26.0m² dan kenyamanan maksimal.
+kamar_tidur,20,1,4,9100000,Modern,Depok,Pengerjaan interior kamar tidur bergaya Modern untuk klien di Depok. Fokus pada efisiensi ruang 21.0m² dan kenyamanan maksimal.
+ruang_tamu,1,3,7,20500000,Ekletik / Colorful Minimalist,Tangerang,Desain ruang tamu bertema Ekletik / Colorful Minimalist yang berlokasi di Tangerang. Area 33.0m² dirancang untuk menciptakan harmoni dan ketenangan.
+dapur,23,2,6,13200000,Modern,Jakarta,Transformasi dapur dengan sentuhan Modern di Jakarta. Menghadirkan suasana hunian yang luas 24.0m² dengan detail estetik.
+kantor,20,4,12,38800000,Modern Minimalist,Tangerang,Pengerjaan interior kantor bergaya Modern Minimalist untuk klien di Tangerang. Fokus pada efisiensi ruang 52.0m² dan kenyamanan maksimal.
+cafe,10,5,18,64000000,Japandi,Jakarta,Pengerjaan interior cafe bergaya Japandi untuk klien di Jakarta. Fokus pada efisiensi ruang 70.0m² dan kenyamanan maksimal.
+toko,14,3,11,33600000,Industrial,Depok,Transformasi toko dengan sentuhan Industrial di Depok. Menghadirkan suasana hunian yang luas 46.0m² dengan detail estetik.
+ruang_makan,28,2,7,16800000,Scandinavian,Bandung,Implementasi gaya Scandinavian untuk ruang makan di Bandung. Mengoptimalkan lahan 29.0m² agar terlihat modern namun tetap fungsional.
+kamar_tidur,22,2,5,12000000,Modern,Tangerang,"Proyek Modern pada kamar tidur seluas 23.0m² di wilayah Tangerang, menggabungkan material premium dengan fungsi ruang yang cerdas."
+ruang_tamu,7,3,9,26000000,Ekletik / Colorful Minimalist,Jakarta,Transformasi ruang tamu dengan sentuhan Ekletik / Colorful Minimalist di Jakarta. Menghadirkan suasana hunian yang luas 39.0m² dengan detail estetik.
+dapur,15,2,4,9400000,Modern,Depok,Transformasi dapur dengan sentuhan Modern di Depok. Menghadirkan suasana hunian yang luas 16.0m² dengan detail estetik.
+kantor,15,4,11,34200000,Modern Minimalist,Bandung,"Proyek Modern Minimalist pada kantor seluas 47.0m² di wilayah Bandung, menggabungkan material premium dengan fungsi ruang yang cerdas."
+cafe,5,5,16,59000000,Japandi,Jakarta,Pengerjaan interior cafe bergaya Japandi untuk klien di Jakarta. Fokus pada efisiensi ruang 65.0m² dan kenyamanan maksimal.
+toko,5,3,9,27200000,Industrial,Depok,Pengerjaan interior toko bergaya Industrial untuk klien di Depok. Fokus pada efisiensi ruang 37.0m² dan kenyamanan maksimal.
+ruang_makan,30,2,7,18200000,Scandinavian,Jakarta,"Proyek Scandinavian pada ruang makan seluas 31.0m² di wilayah Jakarta, menggabungkan material premium dengan fungsi ruang yang cerdas."
+kamar_tidur,21,2,5,11500000,Modern,Tangerang,Transformasi kamar tidur dengan sentuhan Modern di Tangerang. Menghadirkan suasana hunian yang luas 22.0m² dengan detail estetik.
+ruang_tamu,2,3,8,22800000,Ekletik / Colorful Minimalist,Jakarta,Desain ruang tamu bertema Ekletik / Colorful Minimalist yang berlokasi di Jakarta. Area 34.0m² dirancang untuk menciptakan harmoni dan ketenangan.
+dapur,20,2,5,11900000,Modern,Depok,Implementasi gaya Modern untuk dapur di Depok. Mengoptimalkan lahan 21.0m² agar terlihat modern namun tetap fungsional.
+kantor,17,4,11,36000000,Modern Minimalist,Depok,Implementasi gaya Modern Minimalist untuk kantor di Depok. Mengoptimalkan lahan 49.0m² agar terlihat modern namun tetap fungsional.
+cafe,12,5,19,66000000,Japandi,Bandung,Implementasi gaya Japandi untuk cafe di Bandung. Mengoptimalkan lahan 72.0m² agar terlihat modern namun tetap fungsional.
+toko,11,3,10,30500000,Industrial,Bandung,Transformasi toko dengan sentuhan Industrial di Bandung. Menghadirkan suasana hunian yang luas 43.0m² dengan detail estetik.
+ruang_makan,27,2,6,16200000,Scandinavian,Jakarta,Desain ruang makan bertema Scandinavian yang berlokasi di Jakarta. Area 28.0m² dirancang untuk menciptakan harmoni dan ketenangan.
+kamar_tidur,16,1,3,7600000,Modern,Tangerang,Transformasi kamar tidur dengan sentuhan Modern di Tangerang. Menghadirkan suasana hunian yang luas 17.0m² dengan detail estetik.
+ruang_tamu,5,3,8,24500000,Ekletik / Colorful Minimalist,Bandung,Implementasi gaya Ekletik / Colorful Minimalist untuk ruang tamu di Bandung. Mengoptimalkan lahan 37.0m² agar terlihat modern namun tetap fungsional.
+dapur,18,2,5,11000000,Modern,Bandung,"Proyek Modern pada dapur seluas 19.0m² di wilayah Bandung, menggabungkan material premium dengan fungsi ruang yang cerdas."
+kantor,21,4,12,39200000,Modern Minimalist,Tangerang,Implementasi gaya Modern Minimalist untuk kantor di Tangerang. Mengoptimalkan lahan 53.0m² agar terlihat modern namun tetap fungsional.
+cafe,18,5,20,71000000,Japandi,Tangerang,"Proyek Japandi pada cafe seluas 78.0m² di wilayah Tangerang, menggabungkan material premium dengan fungsi ruang yang cerdas."
+toko,8,3,10,29800000,Industrial,Depok,"Proyek Industrial pada toko seluas 40.0m² di wilayah Depok, menggabungkan material premium dengan fungsi ruang yang cerdas."
+ruang_makan,23,2,6,14500000,Scandinavian,Tangerang,Implementasi gaya Scandinavian untuk ruang makan di Tangerang. Mengoptimalkan lahan 24.0m² agar terlihat modern namun tetap fungsional.
+kamar_tidur,25,2,6,14000000,Modern,Depok,Pengerjaan interior kamar tidur bergaya Modern untuk klien di Depok. Fokus pada efisiensi ruang 26.0m² dan kenyamanan maksimal.
+ruang_tamu,31,3,7,21200000,Ekletik / Colorful Minimalist,Jakarta,"Proyek Ekletik / Colorful Minimalist pada ruang tamu seluas 32.0m² di wilayah Jakarta, menggabungkan material premium dengan fungsi ruang yang cerdas."
+dapur,22,2,5,12300000,Modern,Depok,Pengerjaan interior dapur bergaya Modern untuk klien di Depok. Fokus pada efisiensi ruang 23.0m² dan kenyamanan maksimal.
+kantor,14,4,10,32500000,Modern Minimalist,Tangerang,Implementasi gaya Modern Minimalist untuk kantor di Tangerang. Mengoptimalkan lahan 46.0m² agar terlihat modern namun tetap fungsional.
+cafe,14,5,19,67000000,Japandi,Bogor,Desain cafe bertema Japandi yang berlokasi di Bogor. Area 74.0m² dirancang untuk menciptakan harmoni dan ketenangan.
+toko,12,3,10,31500000,Industrial,Bogor,"Proyek Industrial pada toko seluas 44.0m² di wilayah Bogor, menggabungkan material premium dengan fungsi ruang yang cerdas."
+ruang_makan,1,2,7,18900000,Scandinavian,Bandung,Pengerjaan interior ruang makan bergaya Scandinavian untuk klien di Bandung. Fokus pada efisiensi ruang 33.0m² dan kenyamanan maksimal.
+kamar_tidur,17,1,4,8300000,Modern,Depok,Desain kamar tidur bertema Modern yang berlokasi di Depok. Area 18.0m² dirancang untuk menciptakan harmoni dan ketenangan.
+ruang_tamu,9,4,10,31000000,Ekletik / Colorful Minimalist,Tangerang,Transformasi ruang tamu dengan sentuhan Ekletik / Colorful Minimalist di Tangerang. Menghadirkan suasana hunian yang luas 41.0m² dengan detail estetik.
+dapur,19,2,5,11600000,Modern,Tangerang,Pengerjaan interior dapur bergaya Modern untuk klien di Tangerang. Fokus pada efisiensi ruang 20.0m² dan kenyamanan maksimal.
+kantor,19,4,12,38500000,Modern Minimalist,Bogor,Pengerjaan interior kantor bergaya Modern Minimalist untuk klien di Bogor. Fokus pada efisiensi ruang 51.0m² dan kenyamanan maksimal.
+cafe,9,5,17,62500000,Japandi,Bandung,"Proyek Japandi pada cafe seluas 69.0m² di wilayah Bandung, menggabungkan material premium dengan fungsi ruang yang cerdas."
+toko,4,3,9,26000000,Industrial,Tangerang,Implementasi gaya Industrial untuk toko di Tangerang. Mengoptimalkan lahan 36.0m² agar terlihat modern namun tetap fungsional.
+ruang_makan,3,3,8,21000000,Scandinavian,Depok,Pengerjaan interior ruang makan bergaya Scandinavian untuk klien di Depok. Fokus pada efisiensi ruang 35.0m² dan kenyamanan maksimal.
+kamar_tidur,24,2,6,13800000,Modern,Bandung,Implementasi gaya Modern untuk kamar tidur di Bandung. Mengoptimalkan lahan 25.0m² agar terlihat modern namun tetap fungsional.
+ruang_tamu,6,3,8,25200000,Ekletik / Colorful Minimalist,Bandung,Implementasi gaya Ekletik / Colorful Minimalist untuk ruang tamu di Bandung. Mengoptimalkan lahan 38.0m² agar terlihat modern namun tetap fungsional.
+dapur,13,2,4,8700000,Modern,Depok,Implementasi gaya Modern untuk dapur di Depok. Mengoptimalkan lahan 14.0m² agar terlihat modern namun tetap fungsional.
+kantor,24,4,13,41000000,Modern Minimalist,Bandung,"Proyek Modern Minimalist pada kantor seluas 56.0m² di wilayah Bandung, menggabungkan material premium dengan fungsi ruang yang cerdas."
+cafe,22,5,22,74500000,Japandi,Tangerang,Implementasi gaya Japandi untuk cafe di Tangerang. Mengoptimalkan lahan 82.0m² agar terlihat modern namun tetap fungsional.
+toko,10,3,10,30200000,Industrial,Bandung,Desain toko bertema Industrial yang berlokasi di Bandung. Area 42.0m² dirancang untuk menciptakan harmoni dan ketenangan.
+ruang_makan,26,2,6,15600000,Scandinavian,Bogor,"Proyek Scandinavian pada ruang makan seluas 27.0m² di wilayah Bogor, menggabungkan material premium dengan fungsi ruang yang cerdas."
+kamar_tidur,19,1,4,8900000,Modern,Bandung,Pengerjaan interior kamar tidur bergaya Modern untuk klien di Bandung. Fokus pada efisiensi ruang 20.0m² dan kenyamanan maksimal.
+ruang_tamu,13,4,11,33500000,Ekletik / Colorful Minimalist,Tangerang,Desain ruang tamu bertema Ekletik / Colorful Minimalist yang berlokasi di Tangerang. Area 45.0m² dirancang untuk menciptakan harmoni dan ketenangan.
+dapur,25,3,6,14800000,Modern,Jakarta,Desain dapur bertema Modern yang berlokasi di Jakarta. Area 26.0m² dirancang untuk menciptakan harmoni dan ketenangan.
+kantor,16,4,11,35000000,Modern Minimalist,Bandung,Transformasi kantor dengan sentuhan Modern Minimalist di Bandung. Menghadirkan suasana hunian yang luas 48.0m² dengan detail estetik.
+cafe,13,5,18,65500000,Japandi,Depok,Desain cafe bertema Japandi yang berlokasi di Depok. Area 73.0m² dirancang untuk menciptakan harmoni dan ketenangan.
+toko,7,3,9,28200000,Industrial,Jakarta,Desain toko bertema Industrial yang berlokasi di Jakarta. Area 39.0m² dirancang untuk menciptakan harmoni dan ketenangan.
+ruang_makan,2,3,8,20500000,Scandinavian,Bandung,Desain ruang makan bertema Scandinavian yang berlokasi di Bandung. Area 34.0m² dirancang untuk menciptakan harmoni dan ketenangan.
+kamar_tidur,26,2,6,14200000,Modern,Tangerang,Transformasi kamar tidur dengan sentuhan Modern di Tangerang. Menghadirkan suasana hunian yang luas 27.0m² dengan detail estetik.
+ruang_tamu,28,2,7,18800000,Ekletik / Colorful Minimalist,Depok,"Proyek Ekletik / Colorful Minimalist pada ruang tamu seluas 29.0m² di wilayah Depok, menggabungkan material premium dengan fungsi ruang yang cerdas."
+dapur,21,2,5,12100000,Modern,Depok,Implementasi gaya Modern untuk dapur di Depok. Mengoptimalkan lahan 22.0m² agar terlihat modern namun tetap fungsional.
+kantor,22,4,12,39500000,Modern Minimalist,Tangerang,Desain kantor bertema Modern Minimalist yang berlokasi di Tangerang. Area 54.0m² dirancang untuk menciptakan harmoni dan ketenangan.
+cafe,16,5,20,70000000,Japandi,Bogor,Transformasi cafe dengan sentuhan Japandi di Bogor. Menghadirkan suasana hunian yang luas 76.0m² dengan detail estetik.
+toko,15,3,11,33800000,Industrial,Jakarta,Pengerjaan interior toko bergaya Industrial untuk klien di Jakarta. Fokus pada efisiensi ruang 47.0m² dan kenyamanan maksimal.
+ruang_makan,4,3,8,21400000,Scandinavian,Bogor,Desain ruang makan bertema Scandinavian yang berlokasi di Bogor. Area 36.0m² dirancang untuk menciptakan harmoni dan ketenangan.
+kamar_tidur,22,2,5,11800000,Modern,Bogor,Desain kamar tidur bertema Modern yang berlokasi di Bogor. Area 23.0m² dirancang untuk menciptakan harmoni dan ketenangan.
+ruang_tamu,8,3,9,27000000,Ekletik / Colorful Minimalist,Bandung,"Proyek Ekletik / Colorful Minimalist pada ruang tamu seluas 40.0m² di wilayah Bandung, menggabungkan material premium dengan fungsi ruang yang cerdas."
+dapur,24,2,6,13600000,Modern,Tangerang,Pengerjaan interior dapur bergaya Modern untuk klien di Tangerang. Fokus pada efisiensi ruang 25.0m² dan kenyamanan maksimal.
+kantor,25,4,13,42000000,Modern Minimalist,Tangerang,"Proyek Modern Minimalist pada kantor seluas 57.0m² di wilayah Tangerang, menggabungkan material premium dengan fungsi ruang yang cerdas."
+cafe,25,5,23,78000000,Japandi,Jakarta,Implementasi gaya Japandi untuk cafe di Jakarta. Mengoptimalkan lahan 85.0m² agar terlihat modern namun tetap fungsional.
+toko,18,4,12,36000000,Industrial,Depok,Implementasi gaya Industrial untuk toko di Depok. Mengoptimalkan lahan 50.0m² agar terlihat modern namun tetap fungsional.
+ruang_makan,27,2,6,16000000,Scandinavian,Jakarta,Pengerjaan interior ruang makan bergaya Scandinavian untuk klien di Jakarta. Fokus pada efisiensi ruang 28.0m² dan kenyamanan maksimal.
+kamar_tidur,20,2,5,10800000,Modern,Bogor,"Proyek Modern pada kamar tidur seluas 21.0m² di wilayah Bogor, menggabungkan material premium dengan fungsi ruang yang cerdas."
+ruang_tamu,30,3,7,20000000,Ekletik / Colorful Minimalist,Bandung,"Proyek Ekletik / Colorful Minimalist pada ruang tamu seluas 31.0m² di wilayah Bandung, menggabungkan material premium dengan fungsi ruang yang cerdas."
+dapur,18,2,5,11200000,Modern,Tangerang,Desain dapur bertema Modern yang berlokasi di Tangerang. Area 19.0m² dirancang untuk menciptakan harmoni dan ketenangan.
+kantor,13,4,10,32000000,Modern Minimalist,Jakarta,Implementasi gaya Modern Minimalist untuk kantor di Jakarta. Mengoptimalkan lahan 45.0m² agar terlihat modern namun tetap fungsional.
+cafe,7,5,16,60000000,Japandi,Bogor,Pengerjaan interior cafe bergaya Japandi untuk klien di Bogor. Fokus pada efisiensi ruang 67.0m² dan kenyamanan maksimal.
+toko,11,3,10,30000000,Industrial,Depok,Desain toko bertema Industrial yang berlokasi di Depok. Area 43.0m² dirancang untuk menciptakan harmoni dan ketenangan.
+ruang_makan,29,2,7,17800000,Scandinavian,Tangerang,Desain ruang makan bertema Scandinavian yang berlokasi di Tangerang. Area 30.0m² dirancang untuk menciptakan harmoni dan ketenangan.
+kamar_tidur,23,2,6,13400000,Modern,Jakarta,Desain kamar tidur bertema Modern yang berlokasi di Jakarta. Area 24.0m² dirancang untuk menciptakan harmoni dan ketenangan.
+ruang_tamu,5,3,8,24800000,Ekletik / Colorful Minimalist,Bandung,"Proyek Ekletik / Colorful Minimalist pada ruang tamu seluas 37.0m² di wilayah Bandung, menggabungkan material premium dengan fungsi ruang yang cerdas."
