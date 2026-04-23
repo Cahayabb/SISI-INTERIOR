@@ -1,31 +1,34 @@
 package config
 
 import (
-	"database/sql"
-	"fmt"
+	"log"
+	"sisi-interior-system/models"
 
-	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-var DB *sql.DB
+var DB *gorm.DB
 
 func ConnectDB() {
 
-	connStr := "host=localhost user=postgres password=123 dbname=sisiinterior port=5433 sslmode=disable"
+	dsn := "host=localhost user=postgres password=123 dbname=sisiinterior port=5433 sslmode=disable"
 
-	db, err := sql.Open("postgres", connStr)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatal("Gagal koneksi database:", err)
+	}
+	// AUTO MIGRATE
+	err = db.AutoMigrate(
+		&models.Admin{},
+		&models.Portfolio{},
+		&models.Project{},
+	)
 
 	if err != nil {
-		panic(err)
+		log.Fatal("Gagal migrate:", err)
 	}
-
-	err = db.Ping()
-
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println("Database connected")
-
 	DB = db
+	DB = db
+	log.Println("Database connected & migrated")
 }

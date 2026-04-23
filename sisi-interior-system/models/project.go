@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type Project struct {
 	ID               int    `json:"id"`
 	JenisRuangan     string `json:"jenis_ruangan"`
@@ -7,4 +9,6 @@ type Project struct {
 	TingkatKerumitan int    `json:"tingkat_kerumitan"`
 	DurasiPengerjaan int    `json:"durasi_pengerjaan"`
 	HargaProyek      int    `json:"harga_proyek"`
+
+	CreatedAt time.Time
 }

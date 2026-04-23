@@ -14,10 +14,33 @@ func SetupRoutes(r *gin.Engine) {
 		})
 	})
 
-	r.POST("api/login", controllers.LoginAdmin)
-	r.POST("/api/portfolio", controllers.CreatePortfolio)
-	r.GET("/api/portfolio", controllers.GetPortfolio)
-	r.PUT("/api/portfolio/:id", controllers.UpdatePortfolio)
-	r.DELETE("/api/portfolio/:id", controllers.DeletePortfolio)
-	r.POST("/estimasi-biaya", controllers.EstimasiBiaya)
+	api := r.Group("/api")
+	{
+		// ========================
+		// PUBLIC ROUTES
+		// ========================
+		// untuk company profile
+		api.GET("/portfolios", controllers.GetPortfolio)
+
+		// estimasi boleh public
+		api.POST("/estimasi-biaya", controllers.EstimasiBiaya)
+
+		// AUTH
+		api.POST("/login", controllers.LoginAdmin)
+
+		// ========================
+		// ADMIN ROUTES
+		// ========================
+		admin := api.Group("/admin")
+		//admin.Use(middleware.AuthMiddleware())
+		{
+			// PORTFOLIO MANAGEMENT
+			admin.POST("/portfolios", controllers.CreatePortfolio)
+			admin.PUT("/portfolios/:id", controllers.UpdatePortfolio)
+			admin.DELETE("/portfolios/:id", controllers.DeletePortfolio)
+
+			// DASHBOARD
+			admin.GET("/dashboard", controllers.GetDashboard)
+		}
+	}
 }
