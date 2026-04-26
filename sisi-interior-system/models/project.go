@@ -3,12 +3,16 @@ package models
 import "time"
 
 type Project struct {
-	ID               int    `json:"id"`
-	JenisRuangan     string `json:"jenis_ruangan"`
-	LuasRuangan      int    `json:"luas_ruangan"`
-	TingkatKerumitan int    `json:"tingkat_kerumitan"`
-	DurasiPengerjaan int    `json:"durasi_pengerjaan"`
-	HargaProyek      int    `json:"harga_proyek"`
-
-	CreatedAt time.Time
+	ID                int       `json:"id" gorm:"primaryKey"`
+	NamaPerusahaan    string    `json:"nama_perusahaan" gorm:"column:nama_perusahaan"`
+	JenisProyek       string    `json:"jenis_proyek"`
+	LuasArea          int       `json:"luas_area"`
+	JenisPekerjaan    string    `json:"jenis_pekerjaan"`
+	SpesifikasiDesign string    `json:"spesifikasi_design"`
+	AreaLayanan       string    `json:"area_layanan"`
+	DaftarItem        string    `json:"daftar_item"`
+	SpesifikasiItem   string    `json:"spesifikasi_item"`
+	HargaSatuan       int       `json:"harga_satuan"`
+	Tanggal           time.Time `json:"tanggal"`
+	CreatedAt         time.Time
 }

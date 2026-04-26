@@ -104,9 +104,9 @@
             </tr>
             <tr v-for="(item, index) in displayedProyek" :key="item.id">
               <td class="td-no">{{ index + 1 }}</td>
-              <td class="td-main">{{ item.namaPerusahaan }}</td>
-              <td class="td-cell">{{ item.jenisProyek }}</td>
-              <td class="td-cell td-nowrap">{{ item.luasArea }} m²</td>
+              <td class="td-main">{{ item.nama_perusahaan }}</td>
+              <td class="td-cell">{{ item.jenis_proyek }}</td>
+              <td class="td-cell td-nowrap">{{ item.luas_area }} m²</td>
               <td class="td-cell">
                 <span class="badge" :class="badgeClass(item.jenisPekerjaan)">
                   {{ item.jenisPekerjaan }}
@@ -116,7 +116,7 @@
               <td class="td-cell">{{ item.areaLayanan }}</td>
               <td class="td-cell td-truncate">{{ formatDaftarItem(item.daftarItem) }}</td>
               <td class="td-cell td-muted td-truncate">{{ item.spesifikasiItem || '–' }}</td>
-              <td class="td-cell td-nowrap">{{ item.hargaSatuan ? formatRupiah(item.hargaSatuan) : '–' }}</td>
+              <td class="td-cell td-nowrap">{{ item.harga_satuan ? formatRupiah(item.harga_satuan) : '–' }}</td>
               <td class="td-cell td-nowrap td-muted">{{ formatTanggal(item.tanggal) }}</td>
               <td class="td-aksi">
                 <button class="action-btn action-btn--edit" @click="editItem(item)" title="Edit">
@@ -159,18 +159,18 @@
 
         <div class="field">
           <label class="field__label">Nama Perusahaan</label>
-          <input v-model="form.namaPerusahaan" type="text" class="field__input" placeholder="Masukkan nama perusahaan" />
+          <input v-model="form.nama_perusahaan" type="text" class="field__input" placeholder="Masukkan nama perusahaan" />
         </div>
 
         <div class="field">
           <label class="field__label">Jenis Proyek</label>
-          <input v-model="form.jenisProyek" type="text" class="field__input" placeholder="Tentukan jenis proyek" />
+          <input v-model="form.jenis_proyek" type="text" class="field__input" placeholder="Tentukan jenis proyek" />
         </div>
 
         <div class="field">
           <label class="field__label">Luas Area</label>
           <div class="input-suffix-wrap">
-            <input v-model="form.luasArea" type="number" class="field__input field__input--suffix" placeholder="Masukkan nilai luas area dalam m²" />
+            <input v-model="form.luas_area" type="number" class="field__input field__input--suffix" placeholder="Masukkan nilai luas area dalam m²" />
             <span class="input-suffix">m²</span>
           </div>
         </div>
@@ -296,32 +296,55 @@ const daftarItemOptions = [
   'Balcony', 'Garden', 'Basement', 'Garage',
 ]
 
-const proyekList = ref([
-  { id: 1,  namaPerusahaan: 'Apartment 1',  jenisProyek: 'Apartment', luasArea: 83, jenisPekerjaan: 'Renovasi', spesifikasiDesign: 'Japandi',           areaLayanan: 'Jakarta', daftarItem: ['Living Room', 'Kitchen'], spesifikasiItem: '',                  hargaSatuan: '18000000', tanggal: '2015-05-27' },
-  { id: 2,  namaPerusahaan: 'Doughsis',     jenisProyek: 'Cafe',      luasArea: 83, jenisPekerjaan: 'Desain',   spesifikasiDesign: 'Industrial',          areaLayanan: 'Bogor',   daftarItem: ['Living Room', 'Kitchen'], spesifikasiItem: '',                  hargaSatuan: '',         tanggal: '2012-05-19' },
-  { id: 3,  namaPerusahaan: 'Ester',        jenisProyek: 'Rumah',     luasArea: 83, jenisPekerjaan: 'Custom',   spesifikasiDesign: 'Scandinavian',         areaLayanan: 'Bogor',   daftarItem: ['Living Room', 'Kitchen'], spesifikasiItem: '',                  hargaSatuan: '10000000', tanggal: '2016-03-04' },
-  { id: 4,  namaPerusahaan: 'Gemska Clinic',jenisProyek: 'Clinic',    luasArea: 83, jenisPekerjaan: 'Desain',   spesifikasiDesign: 'Modern',               areaLayanan: 'Jakarta', daftarItem: ['Living Room', 'Kitchen'], spesifikasiItem: '',                  hargaSatuan: '18000000', tanggal: '2016-03-04' },
-  { id: 5,  namaPerusahaan: 'KBRU',         jenisProyek: 'Kantor',    luasArea: 83, jenisPekerjaan: 'Desain',   spesifikasiDesign: 'Ekletik / Colorful',   areaLayanan: 'Jakarta', daftarItem: ['Living Room', 'Kitchen'], spesifikasiItem: '',                  hargaSatuan: '',         tanggal: '2013-07-27' },
-  { id: 6,  namaPerusahaan: 'End User',     jenisProyek: 'Rumah',     luasArea: 83, jenisPekerjaan: 'Desain',   spesifikasiDesign: 'Modern',               areaLayanan: 'Depok',   daftarItem: ['Living Room', 'Kitchen'], spesifikasiItem: 'Bahan dasar multi', hargaSatuan: '2000000',  tanggal: '2013-07-27' },
-  { id: 12, namaPerusahaan: 'PT. KSK',      jenisProyek: 'Kantor',    luasArea: 83, jenisPekerjaan: 'Custom',   spesifikasiDesign: 'Modern Minimalist',    areaLayanan: 'Jakarta', daftarItem: ['Living Room', 'Kitchen'], spesifikasiItem: '',                  hargaSatuan: '',         tanggal: '2013-07-27' },
-])
+const proyekList = ref([])
+
+const getProjects = async () => {
+  try {
+    const res = await fetch("http://localhost:8081/api/admin/projects")
+    const data = await res.json()
+    console.log("RESPONSE:", data)
+
+    // mapping ke format frontend kamu
+    proyekList.value = data.map(p => ({
+      id: p.id,
+      nama_perusahaan: p.nama_perusahaan,
+      jenis_proyek: p.jenis_proyek,
+      luas_area: p.luas_area,
+      jenisPekerjaan: p.jenis_pekerjaan,
+      spesifikasiDesign: p.spesifikasi_design,
+      areaLayanan: p.area_layanan,
+      daftarItem: p.daftar_item ? p.daftar_item.split(',') : [],
+      spesifikasiItem: p.spesifikasi_item,
+      harga_satuan: p.harga_satuan,
+      tanggal: p.tanggal
+    }))
+
+  } catch (err) {
+    console.error("Gagal ambil data:", err)
+  }
+}
+
+onMounted(() => {
+  getProjects()
+  document.addEventListener('click', closeMultiSelect)
+})
 
 const emptyForm = () => ({
-  id: null, namaPerusahaan: '', jenisProyek: '', luasArea: '',
+  id: null, nama_perusahaan: '', jenis_proyek: '', luas_area: '',
   jenisPekerjaan: '', spesifikasiDesign: '', areaLayanan: '',
-  daftarItem: [], spesifikasiItem: '', hargaSatuan: '', tanggal: '',
+  daftarItem: [], spesifikasiItem: '', harga_satuan: '', tanggal: '',
 })
 
 const form = ref(emptyForm())
 
 const hargaDisplay = computed(() => {
-  if (!form.value.hargaSatuan) return ''
-  return Number(form.value.hargaSatuan).toLocaleString('id-ID')
+  if (!form.value.harga_satuan) return ''
+  return Number(form.value.harga_satuan).toLocaleString('id-ID')
 })
 
 const onHargaInput = (e) => {
   const raw = e.target.value.replace(/\D/g, '')
-  form.value.hargaSatuan = raw
+  form.value.harga_satuan = raw
   e.target.value = raw ? Number(raw).toLocaleString('id-ID') : ''
 }
 
@@ -330,8 +353,8 @@ const displayedProyek = computed(() => {
   if (searchQuery.value) {
     const q = searchQuery.value.toLowerCase()
     list = list.filter(p =>
-      p.namaPerusahaan.toLowerCase().includes(q) ||
-      p.jenisProyek.toLowerCase().includes(q) ||
+      p.nama_perusahaan.toLowerCase().includes(q) ||
+      p.jenis_proyek.toLowerCase().includes(q) ||
       p.areaLayanan.toLowerCase().includes(q) ||
       p.spesifikasiDesign.toLowerCase().includes(q)
     )
@@ -340,10 +363,10 @@ const displayedProyek = computed(() => {
   list.sort((a, b) => {
     if (sortBy.value === 'tanggal_desc') return new Date(b.tanggal) - new Date(a.tanggal)
     if (sortBy.value === 'tanggal_asc')  return new Date(a.tanggal) - new Date(b.tanggal)
-    if (sortBy.value === 'nama_asc')     return a.namaPerusahaan.localeCompare(b.namaPerusahaan)
-    if (sortBy.value === 'nama_desc')    return b.namaPerusahaan.localeCompare(a.namaPerusahaan)
-    if (sortBy.value === 'luas_desc')    return b.luasArea - a.luasArea
-    if (sortBy.value === 'luas_asc')     return a.luasArea - b.luasArea
+    if (sortBy.value === 'nama_asc')     return a.nama_perusahaan.localeCompare(b.nama_perusahaan)
+    if (sortBy.value === 'nama_desc')    return b.nama_perusahaan.localeCompare(a.nama_perusahaan)
+    if (sortBy.value === 'luas_desc')    return b.luas_area - a.luas_area
+    if (sortBy.value === 'luas_asc')     return a.luas_area - b.luas_area
     return 0
   })
   return list
@@ -363,22 +386,57 @@ onUnmounted(() => document.removeEventListener('click', closeMultiSelect))
 const openForm  = () => { form.value = emptyForm(); editMode.value = false; showForm.value = true }
 const closeForm = () => { showForm.value = false; editMode.value = false; form.value = emptyForm(); multiSelectOpen.value = false }
 
-const handleUpload = () => {
-  if (!form.value.namaPerusahaan) return
-  const today = new Date().toISOString().split('T')[0]
-  if (form.value.id) {
-    const idx = proyekList.value.findIndex(p => p.id === form.value.id)
-    if (idx !== -1) proyekList.value[idx] = { ...form.value }
-  } else {
-    proyekList.value.push({ ...form.value, id: Date.now(), tanggal: today })
+const handleUpload = async () => {
+  if (!form.value.nama_perusahaan) return
+
+  try {
+    const payload = {
+      nama_perusahaan: form.value.nama_perusahaan,
+      jenis_proyek: form.value.jenis_proyek,
+      luas_area: Number(form.value.luas_area),
+      jenis_pekerjaan: form.value.jenisPekerjaan,
+      spesifikasi_design: form.value.spesifikasiDesign,
+      area_layanan: form.value.areaLayanan,
+      daftar_item: form.value.daftarItem.join(','), // array → string
+      spesifikasi_item: form.value.spesifikasiItem,
+      harga_satuan: Number(form.value.harga_satuan),
+      tanggal: new Date().toISOString().split('T')[0]
+    }
+
+    await fetch("http://localhost:8081/api/admin/projects", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    })
+
+    //refresh dari database
+    await getProjects()
+
+    closeForm()
+
+  } catch (err) {
+    console.error("Gagal upload:", err)
   }
-  closeForm()
 }
 
 const editItem   = (item) => { form.value = { ...item, daftarItem: [...(item.daftarItem || [])] }; editMode.value = true; showForm.value = true }
-const deleteItem = (id)   => { proyekList.value = proyekList.value.filter(p => p.id !== id) }
+const deleteItem = async (id) => {
+  try {
+    await fetch(`http://localhost:8081/api/admin/projects/${id}`, {
+      method: "DELETE"
+    })
+
+    await getProjects()
+
+  } catch (err) {
+    console.error("Gagal delete:", err)
+  }
+}
 const onAvatarError = () => { if (avatarImg.value) avatarImg.value.style.display = 'none'; if (avatarFallback.value) avatarFallback.value.style.display = 'flex' }
 </script>
+
 
 <style scoped>
 /* ── Page ── */

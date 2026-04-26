@@ -39,8 +39,13 @@ func SetupRoutes(r *gin.Engine) {
 			admin.PUT("/portfolios/:id", controllers.UpdatePortfolio)
 			admin.DELETE("/portfolios/:id", controllers.DeletePortfolio)
 
+			//DATA PROYEK
+			admin.GET("/projects", controllers.GetProjects)
+			admin.POST("/projects", controllers.CreateProject)
+
 			// DASHBOARD
 			admin.GET("/dashboard", controllers.GetDashboard)
 		}
+
 	}
 }

@@ -1,19 +1,9 @@
-# Full Backend/Frontend Integration & Error Fixes
+# Fix Plan
 
-**Backend (sisi-interior-system):**
-- [x] Portfolio controller fixed
-- [ ] Enable auth middleware
-- [ ] Fix any controller errors
-- [ ] Start API: cd sisi-interior-system && go run main.go (or use exe)
+- [x] Read and understand relevant files
+- [x] Create fix plan and get user confirmation
+- [x] Update `models/project.go` with correct struct schema
+- [x] Rewrite `controllers/project_controller.go` to use GORM + `models.Project`
+- [x] Verify changes compile correctly (✅ `go build` passed with no errors)
+- [x] Fix `Project.vue` template property-name mismatch causing `TypeError: Cannot read properties of undefined (reading 'length')`
 
-**Frontend (sisi-interior-main):**
-- [ ] Fix Portfolio.vue JS bugs (typo formDataF, url template, headers)
-- [ ] Integrate auth token from localStorage in api calls
-- [ ] Update router for protected routes
-- [ ] npm install && npm run dev
-
-**DB:**
-- [ ] Postgres running localhost:5433 db=sisiinterior user=postgres pw=123
-- [ ] Tables migrated on API start
-
-**Current Step 1: Fix Portfolio.vue**

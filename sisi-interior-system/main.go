@@ -13,6 +13,7 @@ func main() {
 	config.ConnectDB()
 
 	r := gin.Default()
+	r.Use(cors.Default())
 
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
