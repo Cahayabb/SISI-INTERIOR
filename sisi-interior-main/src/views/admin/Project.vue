@@ -380,7 +380,6 @@ const formatDaftarItem = (arr) => { if (!arr || !arr.length) return '–'; const
 const toggleMultiSelect = () => { multiSelectOpen.value = !multiSelectOpen.value }
 const closeMultiSelect  = () => { multiSelectOpen.value = false }
 
-onMounted(()  => document.addEventListener('click', closeMultiSelect))
 onUnmounted(() => document.removeEventListener('click', closeMultiSelect))
 
 const openForm  = () => { form.value = emptyForm(); editMode.value = false; showForm.value = true }
@@ -400,16 +399,22 @@ const handleUpload = async () => {
       daftar_item: form.value.daftarItem.join(','), // array → string
       spesifikasi_item: form.value.spesifikasiItem,
       harga_satuan: Number(form.value.harga_satuan),
-      tanggal: new Date().toISOString().split('T')[0]
+      tanggal: new Date().toISOString()
     }
 
-    await fetch("http://localhost:8081/api/admin/projects", {
+    const res = await fetch("http://localhost:8081/api/admin/projects", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(payload)
     })
+
+    if (!res.ok) {
+      const errData = await res.json()
+      console.error("Server error:", errData)
+      return
+    }
 
     //refresh dari database
     await getProjects()
