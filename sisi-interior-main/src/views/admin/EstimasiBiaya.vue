@@ -386,9 +386,18 @@ const form = ref(emptyForm())
 // ─────────────────────────────────────────────
 const fetchEstimasiList = async () => {
   try {
-    const res = await fetch(`${API_BASE_URL}/estimasi`)
+    const res = await fetch(`${API_BASE_URL}/admin/estimasi`)
+
+    if (!res.ok) {
+      const errText = await res.text()
+      throw new Error(errText)
+    }
+
     const data = await res.json()
+
+    // IMPORTANT FIX
     estimasiList.value = data
+
   } catch (err) {
     console.error('Gagal fetch data:', err)
   }
@@ -417,7 +426,7 @@ const prosesEstimasi = async () => {
   try {
     const payload = {
       nama_proyek: form.value.namaProyek,
-      luas_area: Number(form.value.luasRuangan),
+      luas_area: Number(form.value.luas_area),
       tingkat_kerumitan: convertKerumitan(form.value.tingkatKerumitan),
       durasi_pengerjaan: Number(form.value.durasiPengerjaan),
       jenis_ruangan: form.value.jenisProyek,
@@ -428,13 +437,16 @@ const prosesEstimasi = async () => {
       kebutuhan_tambahan: form.value.kebutuhanTambahan,
     }
 
-    const res = await fetch(`${API_BASE_URL}/estimasi`, {
+    const res = await fetch(`${API_BASE_URL}/admin/estimasi`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     })
+
+    if (!res.ok) {
+      const errText = await res.text()
+      throw new Error(errText)
+    }
 
     const data = await res.json()
 
@@ -461,17 +473,28 @@ const prosesEstimasi = async () => {
 const simpanData = async () => {
   try {
     const payload = {
-      ...form.value,
+      nama_proyek: form.value.namaProyek,
+      luas_area: Number(form.value.luas_area),
+      jenis_ruangan: form.value.jenisProyek,
+      tingkat_kerumitan: convertKerumitan(form.value.tingkatKerumitan),
+      durasi_pengerjaan: Number(form.value.durasiPengerjaan),
+      lokasi_proyek: form.value.lokasiProyek,
+      spesifikasi_design: form.value.konsepDesain,
+      material_khusus: form.value.materialKhusus,
+      kebutuhan_tambahan: form.value.kebutuhanTambahan,
       hasil: hasilEstimasi.value
     }
 
-    await fetch(`${API_BASE_URL}/estimasi/simpan`, {
+    const res = await fetch(`${API_BASE_URL}/admin/estimasi`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     })
+
+    if (!res.ok) {
+      const errText = await res.text()
+      throw new Error(errText)
+    }
 
     await fetchEstimasiList()
 
@@ -482,18 +505,24 @@ const simpanData = async () => {
     console.error('Gagal simpan:', err)
   }
 }
-
 // ─────────────────────────────────────────────
 // DELETE
 // ─────────────────────────────────────────────
 const deleteItem = async (id) => {
   try {
-    await fetch(`${API_BASE_URL}/estimasi/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/admin/estimasi/${id}`, {
       method: "DELETE"
     })
+
+    if (!res.ok) {
+      const errText = await res.text()
+      throw new Error(errText)
+    }
+
     await fetchEstimasiList()
+
   } catch (err) {
-    console.error(err)
+    console.error('Delete error:', err)
   }
 }
 
