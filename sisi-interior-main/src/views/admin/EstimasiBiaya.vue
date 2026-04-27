@@ -63,7 +63,7 @@
               <th>No</th>
               <th>Nama Proyek</th>
               <th>Jenis Proyek</th>
-              <th>Luas Ruangan</th>
+              <th>Luas Area</th>
               <th>Biaya</th>
               <th>Tanggal</th>
               <th></th>
@@ -154,8 +154,8 @@
               <input v-model="form.namaProyek" type="text" class="field__input" placeholder="" />
             </div>
             <div class="field">
-              <label class="field__label">Luas Ruangan (m²)</label>
-              <input v-model="form.luasRuangan" type="text" class="field__input" placeholder="" />
+              <label class="field__label">Luas Area (m²)</label>
+              <input v-model="form.luas_area" type="text" class="field__input" placeholder="" />
             </div>
           </div>
 
@@ -251,16 +251,16 @@
           <h3 class="ringkasan-title">Ringkasan Input</h3>
           <div class="ringkasan-rows">
             <div class="ringkasan-row">
-              <span class="ringkasan-label">Luas Ruangan (m²)</span>
-              <span class="ringkasan-value">{{ form.luasRuangan || '–' }} <span v-if="form.luasRuangan">x {{ form.luasRuangan }}m²</span></span>
+              <span class="ringkasan-label">Luas Area (m²)</span>
+              <span class="ringkasan-value">{{ form.luas_area || '–' }} <span v-if="form.luasRuangan">x {{ form.luas_area }}m²</span></span>
             </div>
             <div class="ringkasan-row">
               <span class="ringkasan-label">Kerumitan</span>
-              <span class="ringkasan-value">{{ form.tingkatKerumitan || '–' }}</span>
+              <span class="ringkasan-value">{{ form.tingkat_kerumitan || '–' }}</span>
             </div>
             <div class="ringkasan-row">
               <span class="ringkasan-label">Durasi</span>
-              <span class="ringkasan-value">{{ form.durasiPengerjaan ? form.durasiPengerjaan + ' Hari' : '–' }}</span>
+             <span class="ringkasan-value">{{ form.durasi_pengerjaan ? form.durasi_pengerjaan + ' Hari' : '–' }}</span>
             </div>
           </div>
 
@@ -306,12 +306,12 @@
             </thead>
             <tbody>
               <tr><td>Nama Proyek</td><td>{{ activeItem?.namaProyek || form.namaProyek }}</td></tr>
-              <tr><td>Luas Ruangan</td><td>{{ activeItem?.luasRuangan || form.luasRuangan }}</td></tr>
-              <tr><td>Jenis Proyek</td><td>{{ activeItem?.jenisProyek || form.jenisProyek }}</td></tr>
-              <tr><td>Tingkat Kerumitan</td><td>{{ activeItem?.tingkatKerumitan || form.tingkatKerumitan }}</td></tr>
-              <tr><td>Durasi Pengerjaan</td><td>{{ activeItem?.durasiPengerjaan ? activeItem.durasiPengerjaan + ' Hari' : (form.durasiPengerjaan ? form.durasiPengerjaan + ' Hari' : '–') }}</td></tr>
-              <tr><td>Lokasi Proyek</td><td>{{ activeItem?.lokasiProyek || form.lokasiProyek }}</td></tr>
-              <tr><td>Konsep/Desain</td><td>{{ activeItem?.konsepDesain || form.konsepDesain }}</td></tr>
+              <tr><td>Luas Area</td><td>{{ activeItem?.luas_area || form.luas_area }}</td></tr>
+              <tr><td>Jenis Proyek</td><td>{{ activeItem?.jenis_proyek || form.jenis_proyek }}</td></tr>
+              <tr><td>Tingkat Kerumitan</td><td>{{ activeItem?.tingkat_kerumitan || form.tingkat_kerumitan }}</td></tr>
+              <tr><td>Durasi Pengerjaan</td><td>{{ activeItem?.durasi_pengerjaan ? activeItem.durasi_pengerjaan + ' Hari' : (form.durasiPengerjaan ? form.durasiPengerjaan + ' Hari' : '–') }}</td></tr>
+              <tr><td>Lokasi Proyek</td><td>{{ activeItem?.lokasi_proyek || form.lokasi_proyek }}</td></tr>
+              <tr><td>Spesifikasi Desain</td><td>{{ activeItem?.spesifikasi_desain || form.spesifikasi_desain }}</td></tr>
               <tr><td>Material Khusus</td><td>{{ activeItem?.materialKhusus || form.materialKhusus }}</td></tr>
               <tr><td>Kebutuhan Tambahan</td><td>{{ activeItem?.kebutuhanTambahan || form.kebutuhanTambahan || '–' }}</td></tr>
             </tbody>
@@ -344,12 +344,12 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 
 // ─────────────────────────────────────────────
 // API CONFIG 
 // ─────────────────────────────────────────────
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081/api'
 
 // TODO: uncomment saat backend siap
 // const fetchEstimasiList  = () => fetch(`${API_BASE_URL}/estimasi`).then(r => r.json())
@@ -370,102 +370,84 @@ const activeItem   = ref(null)
 const avatarImg    = ref(null)
 const avatarFallback = ref(null)
 
+const estimasiList  = ref([])
 const hasilEstimasi = ref({ minimum: 0, maksimum: 0, rekomendasi: 0 })
 
 const emptyForm = () => ({
-  namaProyek: '', luasRuangan: '', jenisProyek: '',
-  tingkatKerumitan: '', durasiPengerjaan: '', lokasiProyek: '',
-  konsepDesain: '', materialKhusus: '', kebutuhanTambahan: '',
+  namaProyek: '', luas_area: '', jenis_proyek: '',
+  tingkat_kerumitan: '', durasi_pengerjaan: '', lokasi_proyek: '',
+  spesifikasi_desain: '', materialKhusus: '', kebutuhanTambahan: '',
 })
 
 const form = ref(emptyForm())
 
 // ─────────────────────────────────────────────
-// DUMMY DATA 
+// LOAD DATA DARI DATABASE
 // ─────────────────────────────────────────────
-const estimasiList = ref([
-  { id: 1,  namaProyek: 'ION SCAN 500DT', jenisProyek: 'Alat Deteksi',     luasRuangan: 'Ion scan 500dt.pdf', biayaFile: 'Ion scan 500dt.pdf', tanggal: '2015-05-27', tingkatKerumitan: 'Sedang', durasiPengerjaan: 10, lokasiProyek: 'Jakarta', konsepDesain: 'Modern', materialKhusus: '', kebutuhanTambahan: '' },
-  { id: 2,  namaProyek: 'ION SCAN 500DT', jenisProyek: 'Alat Deteksi',     luasRuangan: 'Ion scan 500dt.pdf', biayaFile: 'Ion scan 500dt.pdf', tanggal: '2012-05-19', tingkatKerumitan: 'Mudah',  durasiPengerjaan: 7,  lokasiProyek: 'Bogor',   konsepDesain: 'Japandi', materialKhusus: 'Kayu Jati', kebutuhanTambahan: '' },
-  { id: 3,  namaProyek: 'RIGAKU',          jenisProyek: 'Alat Identifikasi',luasRuangan: 'Rigaku.pdf',         biayaFile: 'Rigaku.pdf',         tanggal: '2016-03-04', tingkatKerumitan: 'Sulit',  durasiPengerjaan: 14, lokasiProyek: 'Surabaya',konsepDesain: 'Industrial', materialKhusus: 'Baja', kebutuhanTambahan: '' },
-  { id: 12, namaProyek: 'RIGAKU',          jenisProyek: 'Alat Identifikasi',luasRuangan: 'Rigaku.pdf',         biayaFile: 'Rigaku.pdf',         tanggal: '2013-07-27', tingkatKerumitan: 'Sedang', durasiPengerjaan: 10, lokasiProyek: 'Bandung', konsepDesain: 'Minimalis', materialKhusus: '', kebutuhanTambahan: '' },
-])
-
-// ─────────────────────────────────────────────
-// COMPUTED
-// ─────────────────────────────────────────────
-const filteredList = computed(() => {
-  let list = [...estimasiList.value]
-  if (searchQuery.value) {
-    const q = searchQuery.value.toLowerCase()
-    list = list.filter(p =>
-      p.namaProyek.toLowerCase().includes(q) ||
-      p.jenisProyek.toLowerCase().includes(q)
-    )
+const fetchEstimasiList = async () => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/estimasi`)
+    const data = await res.json()
+    estimasiList.value = data
+  } catch (err) {
+    console.error('Gagal fetch data:', err)
   }
-  list.sort((a, b) => {
-    if (sortBy.value === 'date_desc') return new Date(b.tanggal) - new Date(a.tanggal)
-    if (sortBy.value === 'date_asc')  return new Date(a.tanggal) - new Date(b.tanggal)
-    if (sortBy.value === 'nama_asc')  return a.namaProyek.localeCompare(b.namaProyek)
-    return 0
-  })
-  return list
-})
-
-const totalPages = computed(() => Math.max(1, Math.ceil(filteredList.value.length / perPage.value)))
-
-// ─────────────────────────────────────────────
-// METHODS
-// ─────────────────────────────────────────────
-const openForm = () => {
-  form.value = emptyForm()
-  activeItem.value = null
-  currentView.value = 'form'
 }
 
-const resetForm = () => { form.value = emptyForm() }
+onMounted(fetchEstimasiList)
 
-/**
- * prosesEstimasi — kirim ke backend Golang
- */
+// ─────────────────────────────────────────────
+// HELPER
+// ─────────────────────────────────────────────
+const convertKerumitan = (val) => {
+  if (val === 'Mudah') return 1
+  if (val === 'Sedang') return 2
+  if (val === 'Sulit') return 3
+  return 1
+}
+
+// ─────────────────────────────────────────────
+// PROSES ESTIMASI (INI YANG PALING PENTING)
+// ─────────────────────────────────────────────
 const prosesEstimasi = async () => {
-  if (!form.value.namaProyek || !form.value.jenisProyek) return
+  if (!form.value.namaProyek) return
 
   isLoading.value = true
 
   try {
-    // ── DUMMY LOGIC  ──────────────────────
-    await new Promise(r => setTimeout(r, 800)) // simulasi loading
-    const luas = parseFloat(form.value.luasRuangan) || 10
-    const durasi = parseFloat(form.value.durasiPengerjaan) || 10
-    const base = luas * durasi * 500000
-    hasilEstimasi.value = {
-      minimum:     Math.round(base * 0.5),
-      maksimum:    Math.round(base * 2.5),
-      rekomendasi: Math.round(base),
+    const payload = {
+      nama_proyek: form.value.namaProyek,
+      luas_area: Number(form.value.luasRuangan),
+      tingkat_kerumitan: convertKerumitan(form.value.tingkatKerumitan),
+      durasi_pengerjaan: Number(form.value.durasiPengerjaan),
+      jenis_ruangan: form.value.jenisProyek,
+      jenis_pekerjaan: form.value.jenisProyek,
+      spesifikasi_design: form.value.konsepDesain,
+      lokasi_proyek: form.value.lokasiProyek,
+      material_khusus: form.value.materialKhusus,
+      kebutuhan_tambahan: form.value.kebutuhanTambahan,
     }
-    // ── END DUMMY ──────────────────────────────────────────────────
 
-    // ── API CALL ─────────────────────
-    // const payload = {
-    //   nama_proyek:        form.value.namaProyek,
-    //   luas_ruangan:       form.value.luasRuangan,
-    //   jenis_proyek:       form.value.jenisProyek,
-    //   tingkat_kerumitan:  form.value.tingkatKerumitan,
-    //   durasi_pengerjaan:  Number(form.value.durasiPengerjaan),
-    //   lokasi_proyek:      form.value.lokasiProyek,
-    //   konsep_desain:      form.value.konsepDesain,
-    //   material_khusus:    form.value.materialKhusus,
-    //   kebutuhan_tambahan: form.value.kebutuhanTambahan,
-    // }
-    // const res  = await postEstimasi(payload)
-    // hasilEstimasi.value = {
-    //   minimum:     res.minimum,
-    //   maksimum:    res.maksimum,
-    //   rekomendasi: res.rekomendasi,
-    // }
-    // ── END API CALL ───────────────────────────────────────────────
+    const res = await fetch(`${API_BASE_URL}/estimasi`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    })
+
+    const data = await res.json()
+
+    const estimasi = data.estimasi_harga
+
+    hasilEstimasi.value = {
+      minimum: estimasi * 0.8,
+      maksimum: estimasi * 1.2,
+      rekomendasi: estimasi
+    }
 
     currentView.value = 'hasil'
+
   } catch (err) {
     console.error('Estimasi error:', err)
   } finally {
@@ -473,83 +455,71 @@ const prosesEstimasi = async () => {
   }
 }
 
-/**
- * simpanData — simpan hasil estimasi ke list
- */
+// ─────────────────────────────────────────────
+// SIMPAN KE DATABASE
+// ─────────────────────────────────────────────
 const simpanData = async () => {
-  // ── DUMMY ──────────────────────────────────────────────────────
-  const newItem = {
-    id: Date.now(),
-    namaProyek:        form.value.namaProyek,
-    jenisProyek:       form.value.jenisProyek,
-    luasRuangan:       form.value.luasRuangan,
-    biayaFile:         `${form.value.namaProyek}.pdf`,
-    tanggal:           new Date().toISOString().split('T')[0],
-    tingkatKerumitan:  form.value.tingkatKerumitan,
-    durasiPengerjaan:  form.value.durasiPengerjaan,
-    lokasiProyek:      form.value.lokasiProyek,
-    konsepDesain:      form.value.konsepDesain,
-    materialKhusus:    form.value.materialKhusus,
-    kebutuhanTambahan: form.value.kebutuhanTambahan,
+  try {
+    const payload = {
+      ...form.value,
+      hasil: hasilEstimasi.value
+    }
+
+    await fetch(`${API_BASE_URL}/estimasi/simpan`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    })
+
+    await fetchEstimasiList()
+
+    currentView.value = 'list'
+    form.value = emptyForm()
+
+  } catch (err) {
+    console.error('Gagal simpan:', err)
   }
-  estimasiList.value.push(newItem)
-  // ── END DUMMY ──────────────────────────────────────────────────
+}
 
-  // ── API CALL ─────────────────────
-  // await postEstimasi({ ...payload, hasil: hasilEstimasi.value })
-  // await fetchEstimasiList().then(data => { estimasiList.value = data })
-  // ── END API CALL ───────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// DELETE
+// ─────────────────────────────────────────────
+const deleteItem = async (id) => {
+  try {
+    await fetch(`${API_BASE_URL}/estimasi/${id}`, {
+      method: "DELETE"
+    })
+    await fetchEstimasiList()
+  } catch (err) {
+    console.error(err)
+  }
+}
 
-  currentView.value = 'list'
+// ─────────────────────────────────────────────
+// VIEW
+// ─────────────────────────────────────────────
+const openForm = () => {
   form.value = emptyForm()
-  activeItem.value = null
-}
-
-const viewHasil = (item) => {
-  activeItem.value = item
-  // ── DUMMY hasil ─────────────────────────────────────────────────
-  hasilEstimasi.value = { minimum: 50000, maksimum: 250000, rekomendasi: 100000 }
-  // ── API  ──────────────────────────
-  // getEstimasiById(item.id).then(res => { hasilEstimasi.value = res.hasil })
-  currentView.value = 'hasil'
-}
-
-/**
- * deleteItem — hapus dari list
- */
-const deleteItem = (id) => {
-  estimasiList.value = estimasiList.value.filter(p => p.id !== id)
-  // ── API  ──────────────────────────
-  // deleteEstimasi(id)
+  currentView.value = 'form'
 }
 
 // ─────────────────────────────────────────────
-// HELPERS
+// COMPUTED
 // ─────────────────────────────────────────────
-const badgeClass = (j) => {
-  if (j === 'Alat Deteksi')      return 'badge--deteksi'
-  if (j === 'Alat Identifikasi') return 'badge--identifikasi'
-  if (j === 'Renovasi')          return 'badge--renovasi'
-  if (j === 'Desain Interior')   return 'badge--desain'
-  if (j === 'Custom Furniture')  return 'badge--custom'
-  return ''
-}
+const filteredList = computed(() => {
+  let list = [...estimasiList.value]
 
-const formatRupiah = (v) => {
-  if (!v && v !== 0) return '–'
-  return 'Rs. ' + Number(v).toLocaleString('en-US', { minimumFractionDigits: 2 })
-}
+  if (searchQuery.value) {
+    const q = searchQuery.value.toLowerCase()
+    list = list.filter(p =>
+      p.nama_proyek.toLowerCase().includes(q)
+    )
+  }
 
-const formatTanggal = (v) => {
-  if (!v) return '–'
-  const d = new Date(v)
-  return `${d.getMonth()+1}/${d.getDate()}/${String(d.getFullYear()).slice(2)}`
-}
-
-const onAvatarError = () => {
-  if (avatarImg.value) avatarImg.value.style.display = 'none'
-  if (avatarFallback.value) avatarFallback.value.style.display = 'flex'
-}
+  return list
+})
 </script>
 
 <style scoped>

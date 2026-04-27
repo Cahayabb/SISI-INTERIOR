@@ -1,6 +1,8 @@
 import pandas as pd
 import psycopg2
 from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_absolute_error
 import pickle
 
 # koneksi database
@@ -12,22 +14,43 @@ conn = psycopg2.connect(
     port="5433"
 )
 
-print("Koneksi berhasil")
-
 query = """
-SELECT luas_area, tingkat_kerumitan, durasi_pengerjaan, harga_proyek
+SELECT 
+    luas_area, 
+    tingkat_kerumitan, 
+    durasi_pengerjaan,
+    jenis_ruangan,
+    jenis_pekerjaan,
+    spesifikasi_design,
+    harga_proyek
 FROM data_proyek
 """
-
 df = pd.read_sql(query, conn)
 
-X = df[['luas_area','tingkat_kerumitan','durasi_pengerjaan']]
+df = df.dropna()
+
+# encoding
+df = pd.get_dummies(df, columns=[
+    'jenis_ruangan',
+    'jenis_pekerjaan',
+    'spesifikasi_design'
+])
+
+X = df.drop('harga_proyek', axis=1)
 y = df['harga_proyek']
 
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
 model = LinearRegression()
-model.fit(X,y)
+model.fit(X_train, y_train)
 
-# simpan model
-pickle.dump(model, open("model_estimasi.pkl","wb"))
+pred = model.predict(X_test)
 
-print("Model berhasil dibuat")
+print("MAE:", mean_absolute_error(y_test, pred))
+# simpan
+pickle.dump({
+    "model": model,
+    "columns": X.columns
+}, open("model_estimasi.pkl","wb"))
+
+print("Model siap digunakan")

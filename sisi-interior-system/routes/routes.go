@@ -45,7 +45,11 @@ func SetupRoutes(r *gin.Engine) {
 
 			// DASHBOARD
 			admin.GET("/dashboard", controllers.GetDashboard)
-		}
 
+			//ESTIMASI
+			admin.POST("/estimasi", controllers.EstimasiBiaya)
+			admin.GET("/estimasi", controllers.GetEstimasi)
+			admin.DELETE("/estimasi/:id", controllers.DeleteEstimasi)
+		}
 	}
 }
