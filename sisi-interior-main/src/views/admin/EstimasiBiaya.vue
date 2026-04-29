@@ -1,5 +1,12 @@
 <template>
-  <div class="estimasi-page">
+<div class="estimasi-page" :key="`view-${currentView}`">
+</xai:function_call.
+
+
+
+
+<xai:function_call name="edit_file">
+<parameter name="path">sisi-interior-main/src/views/admin/EstimasiBiaya.vue
 
     <!-- ── HEADER ── -->
     <div class="page-header">
@@ -21,9 +28,9 @@
         <div class="avatar">
           <img src="" alt="User" @error="onAvatarError" ref="avatarImg" />
           <div class="avatar-fallback" ref="avatarFallback">A</div>
-        </div>
       </div>
     </div>
+     </div>
 
     <!-- ══════════════════════════════════════
          VIEW 1: LIST DATA ESTIMASI TERSIMPAN
@@ -48,10 +55,18 @@
               <svg class="select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
           </div>
-          <button class="btn-filter">
+          <button class="btn-filter" @click="showFilter = !showFilter">
             Filter
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
           </button>
+          <div v-if="showFilter" class="filter-box">
+          <select v-model="filterJenis">
+            <option value="">Semua Jenis</option>
+            <option>Custom Furniture</option>
+            <option>Desain Interior</option>
+            <option>Renovasi</option>
+          </select>
+        </div>
         </div>
       </div>
 
@@ -61,7 +76,7 @@
           <thead>
             <tr>
               <th>No</th>
-              <th>Nama Proyek</th>
+              <th>Nama Perusahaan</th>
               <th>Jenis Proyek</th>
               <th>Luas Area</th>
               <th>Biaya</th>
@@ -83,11 +98,11 @@
             </tr>
             <tr v-for="(item, index) in filteredList" :key="item.id">
               <td class="td-no">{{ index + 1 }}</td>
-              <td class="td-main">{{ item.namaProyek }}</td>
+              <td class="td-main">{{ item.nama_perusahaan }}</td>
               <td class="td-cell">
-                <span class="badge" :class="badgeClass(item.jenisProyek)">{{ item.jenisProyek }}</span>
+                <span class="badge" :class="badgeClass(item.jenis_ruangan)">{{ item.jenis_ruangan }}</span>
               </td>
-              <td class="td-cell">{{ item.luasRuangan }}</td>
+              <td class="td-cell">{{ item.luas_area }}</td>
               <td class="td-cell td-file">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                 {{ item.biayaFile }}
@@ -150,8 +165,8 @@
         <div class="form-card">
           <div class="form-grid-2">
             <div class="field">
-              <label class="field__label">Nama Proyek</label>
-              <input v-model="form.namaProyek" type="text" class="field__input" placeholder="" />
+              <label class="field__label">Nama Perusahaan</label>
+              <input v-model="form.nama_perusahaan" type="text" class="field__input" placeholder="" />
             </div>
             <div class="field">
               <label class="field__label">Luas Area (m²)</label>
@@ -162,22 +177,87 @@
           <div class="field">
             <label class="field__label">Jenis Proyek</label>
             <div class="field__select-wrap">
-              <select v-model="form.jenisProyek" class="field__select">
+              <select v-model="form.jenis_proyek" class="field__select">
                 <option value="" disabled>Pilih jenis proyek</option>
-                <option>Custom Furniture</option>
-                <option>Desain Interior</option>
-                <option>Alat Deteksi</option>
-                <option>Alat Identifikasi</option>
-                <option>Renovasi</option>
+                <option>Rumah</option>
+                <option>Apartment</option>
+                <option>Cafe</option>
+                <option>Kantor</option>
+                <option>Clinic</option>
+                <option>Tenant</option>
+                <option>Kost</option>
+                <option>SPA</option>
+                <option value="lainnya">Lainnya</option>
               </select>
+
+
+              <input
+                v-if="form.jenis_proyek === 'lainnya'"
+                v-model="form.jenis_proyek_lainnya"
+                type="text"
+                class="field__input"
+                placeholder="Masukkan jenis proyek lainnya"
+              />
               <svg class="field__select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field__label">Jenis Pekerjaan</label>
+            <select v-model="form.jenis_pekerjaan" class="field__select">
+              <option value="" disabled>Pilih jenis pekerjaan</option>
+              <option>Design</option>
+              <option>Build / Fit Out</option>
+              <option>Furniture</option>
+              <option>MEP (Mechanical Electrical Plumbing)</option>
+              <option>Maintenance</option>
+            </select>
+          </div>
+          
+          <div class="field">
+            <label class="field__label">Daftar Item</label>
+
+            <div class="multiselect" ref="multiRef">
+              
+              <!-- Trigger -->
+              <div class="multiselect__trigger" @click="toggleMultiSelect">
+                <span v-if="form.daftar_item.length === 0" class="multiselect__placeholder">
+                  Silahkan pilih beberapa daftar item
+                </span>
+
+                <span v-else class="multiselect__value">
+                  {{ form.daftar_item.join(', ') }}
+                </span>
+
+                <svg class="multiselect__arrow" width="16" height="16"
+                  :style="{ transform: multiSelectOpen ? 'rotate(180deg)' : 'rotate(0deg)' }">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </div>
+
+              <!-- Dropdown -->
+              <div v-if="multiSelectOpen" class="multiselect__dropdown">
+                <label 
+                  v-for="item in daftarItemOptions" 
+                  :key="item" 
+                  class="multiselect__option"
+                >
+                  <input
+                    type="checkbox"
+                    :value="item"
+                    v-model="form.daftar_item"
+                  />
+                  <span>{{ item }}</span>
+                </label>
+              </div>
+
             </div>
           </div>
 
           <div class="field">
             <label class="field__label">Tingkat Kerumitan</label>
             <div class="field__select-wrap">
-              <select v-model="form.tingkatKerumitan" class="field__select">
+              <select v-model="form.tingkat_kerumitan" class="field__select">
                 <option value="" disabled>Pilih tingkat kerumitan</option>
                 <option>Mudah</option>
                 <option>Sedang</option>
@@ -189,12 +269,12 @@
 
           <div class="field">
             <label class="field__label">Durasi Pengerjaan (hari)</label>
-            <input v-model="form.durasiPengerjaan" type="number" class="field__input" placeholder="" />
+            <input v-model="form.durasi_pengerjaan" type="number" class="field__input" placeholder="" />
           </div>
 
           <div class="field">
             <label class="field__label">Lokasi Proyek</label>
-            <input v-model="form.lokasiProyek" type="text" class="field__input" placeholder="" />
+            <input v-model="form.lokasi_proyek" type="text" class="field__input" placeholder="" />
           </div>
 
           <div class="field">
@@ -220,7 +300,7 @@
           <div class="field">
             <label class="field__label">Material Khusus</label>
             <div class="field__select-wrap">
-              <select v-model="form.materialKhusus" class="field__select">
+              <select v-model="form.material_khusus" class="field__select">
                 <option value="" disabled>Pilih material khusus</option>
                 <option>Kayu Jati</option>
                 <option>Kayu Pinus</option>
@@ -229,13 +309,19 @@
                 <option>Granit</option>
                 <option>Kaca Tempered</option>
               </select>
+              <input
+                v-model="form.material_khusus"
+                type="text"
+                class="field__input"
+                placeholder="Opsional (contoh: marmer, baja ringan)"
+              />
               <svg class="field__select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
           </div>
 
           <div class="field">
             <label class="field__label">Kebutuhan Tambahan</label>
-            <textarea v-model="form.kebutuhanTambahan" class="field__textarea" placeholder="Additional information" rows="3"></textarea>
+            <textarea v-model="form.kebutuhan_tambahan" class="field__textarea" placeholder="Additional information" rows="3"></textarea>
           </div>
 
           <div class="form-footer">
@@ -252,7 +338,7 @@
           <div class="ringkasan-rows">
             <div class="ringkasan-row">
               <span class="ringkasan-label">Luas Area (m²)</span>
-              <span class="ringkasan-value">{{ form.luas_area || '–' }} <span v-if="form.luasRuangan">x {{ form.luas_area }}m²</span></span>
+              <span class="ringkasan-value">{{ form.luas_area || '–' }} <span v-if="form.luas_area">x {{ form.luas_area }}m²</span></span>
             </div>
             <div class="ringkasan-row">
               <span class="ringkasan-label">Kerumitan</span>
@@ -305,15 +391,58 @@
               </tr>
             </thead>
             <tbody>
-              <tr><td>Nama Proyek</td><td>{{ activeItem?.namaProyek || form.namaProyek }}</td></tr>
-              <tr><td>Luas Area</td><td>{{ activeItem?.luas_area || form.luas_area }}</td></tr>
-              <tr><td>Jenis Proyek</td><td>{{ activeItem?.jenis_proyek || form.jenis_proyek }}</td></tr>
-              <tr><td>Tingkat Kerumitan</td><td>{{ activeItem?.tingkat_kerumitan || form.tingkat_kerumitan }}</td></tr>
-              <tr><td>Durasi Pengerjaan</td><td>{{ activeItem?.durasi_pengerjaan ? activeItem.durasi_pengerjaan + ' Hari' : (form.durasiPengerjaan ? form.durasiPengerjaan + ' Hari' : '–') }}</td></tr>
-              <tr><td>Lokasi Proyek</td><td>{{ activeItem?.lokasi_proyek || form.lokasi_proyek }}</td></tr>
-              <tr><td>Spesifikasi Desain</td><td>{{ activeItem?.spesifikasi_desain || form.spesifikasi_desain }}</td></tr>
-              <tr><td>Material Khusus</td><td>{{ activeItem?.materialKhusus || form.materialKhusus }}</td></tr>
-              <tr><td>Kebutuhan Tambahan</td><td>{{ activeItem?.kebutuhanTambahan || form.kebutuhanTambahan || '–' }}</td></tr>
+              <tr>
+                <td>Nama Perusahaan</td>
+                <td>{{ activeItem?.nama_perusahaan || form.nama_perusahaan || '–' }}</td>
+              </tr>
+
+              <tr>
+                <td>Luas Area</td>
+                <td>{{ activeItem?.luas_area || form.luas_area || '–' }}</td>
+              </tr>
+
+              <tr>
+                <td>Jenis Proyek</td>
+                <td>{{ activeItem?.jenis_ruangan || form.jenis_ruangan || '–' }}</td>
+              </tr>
+
+              <tr>
+                <td>Tingkat Kerumitan</td>
+                <td>{{ activeItem?.tingkat_kerumitan || form.tingkat_kerumitan || '–' }}</td>
+              </tr>
+
+              <tr>
+                <td>Durasi Pengerjaan</td>
+                <td>
+                  {{
+                    activeItem?.durasi_pengerjaan
+                      ? activeItem.durasi_pengerjaan + ' Hari'
+                      : (form.durasi_pengerjaan
+                          ? form.durasi_pengerjaan + ' Hari'
+                          : '–')
+                  }}
+                </td>
+              </tr>
+
+              <tr>
+                <td>Lokasi Proyek</td>
+                <td>{{ activeItem?.lokasi_proyek || form.lokasi_proyek || '–' }}</td>
+              </tr>
+
+              <tr>
+                <td>Spesifikasi Desain</td>
+                <td>{{ activeItem?.spesifikasi_design || form.spesifikasi_design || '–' }}</td>
+              </tr>
+
+              <tr>
+                <td>Material Khusus</td>
+                <td>{{ activeItem?.material_khusus || form.material_khusus || '–' }}</td>
+              </tr>
+
+              <tr>
+                <td>Kebutuhan Tambahan</td>
+                <td>{{ activeItem?.kebutuhan_tambahan || form.kebutuhan_tambahan || '–' }}</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -323,15 +452,15 @@
           <div class="hasil-result-rows">
             <div class="hasil-result-row">
               <span class="hasil-result-label">Minimum</span>
-              <span class="hasil-result-value">{{ formatRupiah(hasilEstimasi.minimum) }}</span>
+              <span class="hasil-result-value">{{ formatRupiah(hasilEstimasi?.minimum || 0) }}</span>
             </div>
             <div class="hasil-result-row">
               <span class="hasil-result-label">Maksimum</span>
-              <span class="hasil-result-value">{{ formatRupiah(hasilEstimasi.maksimum) }}</span>
+              <span class="hasil-result-value">{{ formatRupiah(hasilEstimasi?.maksimum || 0) }}</span>
             </div>
             <div class="hasil-result-row highlight">
               <span class="hasil-result-label">Rekomendasi</span>
-              <span class="hasil-result-value hasil-result-value--gold">{{ formatRupiah(hasilEstimasi.rekomendasi) }}</span>
+              <span class="hasil-result-value hasil-result-value--gold">{{ formatRupiah(hasilEstimasi?.rekomendasi || 0) }}</span>
             </div>
           </div>
           <button class="btn-simpan-data" @click="simpanData">Simpan Data</button>
@@ -344,18 +473,35 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeMount } from 'vue'
+
+const multiSelectOpen = ref(false)
+const multiRef = ref(null)
+
+const toggleMultiSelect = () => {
+  multiSelectOpen.value = !multiSelectOpen.value
+}
+
+// close kalau klik luar
+const handleClickOutside = (event) => {
+  if (multiRef.value && !multiRef.value.contains(event.target)) {
+    multiSelectOpen.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
+
 
 // ─────────────────────────────────────────────
 // API CONFIG 
 // ─────────────────────────────────────────────
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081/api'
-
-// TODO: uncomment saat backend siap
-// const fetchEstimasiList  = () => fetch(`${API_BASE_URL}/estimasi`).then(r => r.json())
-// const postEstimasi       = (payload) => fetch(`${API_BASE_URL}/estimasi`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).then(r => r.json())
-// const deleteEstimasi     = (id) => fetch(`${API_BASE_URL}/estimasi/${id}`, { method: 'DELETE' })
-// const getEstimasiById    = (id) => fetch(`${API_BASE_URL}/estimasi/${id}`).then(r => r.json())
 
 // ─────────────────────────────────────────────
 // STATE
@@ -367,39 +513,83 @@ const currentPage  = ref(1)
 const perPage      = ref(12)
 const isLoading    = ref(false)
 const activeItem   = ref(null)
-const avatarImg    = ref(null)
-const avatarFallback = ref(null)
+const showFilter = ref(false)
+const filterJenis = ref('')
 
 const estimasiList  = ref([])
 const hasilEstimasi = ref({ minimum: 0, maksimum: 0, rekomendasi: 0 })
 
+const avatarImg = ref(null)
+const avatarFallback = ref(null)
+
+const onAvatarError = async () => {
+  await nextTick()
+  if (avatarImg.value) avatarImg.value.style.display = 'none'
+  if (avatarFallback.value) avatarFallback.value.style.display = 'flex'
+}
+
 const emptyForm = () => ({
-  namaProyek: '', luas_area: '', jenis_proyek: '',
-  tingkat_kerumitan: '', durasi_pengerjaan: '', lokasi_proyek: '',
-  spesifikasi_desain: '', materialKhusus: '', kebutuhanTambahan: '',
+  nama_perusahaan: '',
+  luas_area: '',
+  jenis_proyek: '',
+  jenis_proyek_lainnya: '',
+  jenis_pekerjaan: '',
+  tingkat_kerumitan: '',
+  durasi_pengerjaan: '',
+  lokasi_proyek: '',
+  spesifikasi_design: '',
+  material_khusus: '',
+  daftar_item: '',
+  kebutuhan_tambahan: '',
 })
+
+const daftarItemOptions = [
+  // 🏠 Rumah
+  "Living Room", "Master Room", "Bed Room", "Kitchen",
+  "Dining Room", "Bath Room / Toilet", "Service Area",
+  "Workspace", "Indoor Area", "Outdoor Area",
+  "Backyard Garden", "Side Terrace",
+
+  // 🏢 Kantor
+  "Lobby", "Director Room", "Manager Room", "Staff Room",
+  "Office Room", "Meeting Room", "Waiting Room",
+  "Consultation Room", "Treatment Room", "Training Room",
+  "Cashier", "Canteen Area", "Mushalla",
+
+  // 🐾 Bisnis
+  "Pet Shop", "Pet Hotel", "Grooming Room", "Pet Clinic",
+
+  // 🛠️ Khusus
+  "Understair Cabinet", "Kitchen Area", "Kitchen Set", "Kontainer Mart",
+
+  // 🪑 Furniture
+  "Bar Table", "Coffee Table", "Wooden Bench",
+  "Wall Panel", "Pendant Lamp", "Backdrop Logo"
+]
 
 const form = ref(emptyForm())
 
 // ─────────────────────────────────────────────
-// LOAD DATA DARI DATABASE
+// LOAD DATA
 // ─────────────────────────────────────────────
+const loading = ref(false)
+const apiError = ref('')
+
 const fetchEstimasiList = async () => {
+  loading.value = true
+  apiError.value = ''
   try {
     const res = await fetch(`${API_BASE_URL}/admin/estimasi`)
-
     if (!res.ok) {
       const errText = await res.text()
-      throw new Error(errText)
+      throw new Error(errText || `HTTP ${res.status}`)
     }
-
-    const data = await res.json()
-
-    // IMPORTANT FIX
-    estimasiList.value = data
-
+    estimasiList.value = await res.json()
   } catch (err) {
-    console.error('Gagal fetch data:', err)
+    apiError.value = err.message
+    console.error('Gagal fetch:', err)
+  } finally {
+    loading.value = false
   }
 }
 
@@ -408,33 +598,66 @@ onMounted(fetchEstimasiList)
 // ─────────────────────────────────────────────
 // HELPER
 // ─────────────────────────────────────────────
-const convertKerumitan = (val) => {
-  if (val === 'Mudah') return 1
-  if (val === 'Sedang') return 2
-  if (val === 'Sulit') return 3
-  return 1
+const badgeClass = (jenis) => {
+  if (!jenis) return ''
+
+  const val = jenis.toLowerCase()
+
+  if (val.includes('custom')) return 'badge--custom'
+  if (val.includes('desain')) return 'badge--desain'
+  if (val.includes('renovasi')) return 'badge--renovasi'
+  if (val.includes('deteksi')) return 'badge--deteksi'
+  if (val.includes('identifikasi')) return 'badge--identifikasi'
+
+  return ''
+}
+
+const formatRupiah = (angka) => {
+  if (!angka) return 'Rp 0'
+
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0
+  }).format(angka)
+}
+
+const formatTanggal = (tanggal) => {
+  if (!tanggal) return '-'
+
+  const date = new Date(tanggal)
+
+  return date.toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  })
 }
 
 // ─────────────────────────────────────────────
-// PROSES ESTIMASI (INI YANG PALING PENTING)
+// PROSES ESTIMASI
 // ─────────────────────────────────────────────
 const prosesEstimasi = async () => {
-  if (!form.value.namaProyek) return
+  if (!form.value.nama_perusahaan) return
 
   isLoading.value = true
 
   try {
     const payload = {
-      nama_proyek: form.value.namaProyek,
+      nama_proyek: form.value.nama_perusahaan,
       luas_area: Number(form.value.luas_area),
-      tingkat_kerumitan: convertKerumitan(form.value.tingkatKerumitan),
-      durasi_pengerjaan: Number(form.value.durasiPengerjaan),
-      jenis_ruangan: form.value.jenisProyek,
-      jenis_pekerjaan: form.value.jenisProyek,
-      spesifikasi_design: form.value.konsepDesain,
-      lokasi_proyek: form.value.lokasiProyek,
-      material_khusus: form.value.materialKhusus,
-      kebutuhan_tambahan: form.value.kebutuhanTambahan,
+      jenis_ruangan: form.value.jenis_proyek === 'lainnya'
+        ? form.value.jenis_proyek_lainnya
+        : form.value.jenis_proyek,
+      jenis_pekerjaan: form.value.jenis_pekerjaan,
+      tingkat_kerumitan: form.value.tingkat_kerumitan,
+      durasi_pengerjaan: Number(form.value.durasi_pengerjaan),
+      
+      lokasi_proyek: form.value.lokasi_proyek,
+      spesifikasi_design: form.value.spesifikasi_design,
+      material_khusus: form.value.material_khusus || null,
+      daftar_item: form.value.daftar_item.join(', '), 
+      kebutuhan_tambahan: form.value.kebutuhan_tambahan,
     }
 
     const res = await fetch(`${API_BASE_URL}/admin/estimasi`, {
@@ -443,14 +666,11 @@ const prosesEstimasi = async () => {
       body: JSON.stringify(payload)
     })
 
-    if (!res.ok) {
-      const errText = await res.text()
-      throw new Error(errText)
-    }
+    const text = await res.text()
+    if (!res.ok) throw new Error(text)
 
-    const data = await res.json()
-
-    const estimasi = data.estimasi_harga
+    const data = JSON.parse(text)
+    const estimasi = data.estimasi_harga || 0
 
     hasilEstimasi.value = {
       minimum: estimasi * 0.8,
@@ -468,21 +688,20 @@ const prosesEstimasi = async () => {
 }
 
 // ─────────────────────────────────────────────
-// SIMPAN KE DATABASE
+// SIMPAN DATA
 // ─────────────────────────────────────────────
 const simpanData = async () => {
   try {
     const payload = {
-      nama_proyek: form.value.namaProyek,
+      nama_perusahaan: form.value.nama_perusahaan,
       luas_area: Number(form.value.luas_area),
-      jenis_ruangan: form.value.jenisProyek,
-      tingkat_kerumitan: convertKerumitan(form.value.tingkatKerumitan),
-      durasi_pengerjaan: Number(form.value.durasiPengerjaan),
-      lokasi_proyek: form.value.lokasiProyek,
-      spesifikasi_design: form.value.konsepDesain,
-      material_khusus: form.value.materialKhusus,
-      kebutuhan_tambahan: form.value.kebutuhanTambahan,
-      hasil: hasilEstimasi.value
+      jenis_ruangan: form.value.jenis_ruangan,
+      tingkat_kerumitan: form.value.tingkat_kerumitan,
+      durasi_pengerjaan: Number(form.value.durasi_pengerjaan),
+      lokasi_proyek: form.value.lokasi_proyek,
+      spesifikasi_design: form.value.spesifikasi_design,
+      material_khusus: form.value.material_khusus,
+      kebutuhan_tambahan: form.value.kebutuhan_tambahan,
     }
 
     const res = await fetch(`${API_BASE_URL}/admin/estimasi`, {
@@ -491,10 +710,8 @@ const simpanData = async () => {
       body: JSON.stringify(payload)
     })
 
-    if (!res.ok) {
-      const errText = await res.text()
-      throw new Error(errText)
-    }
+    const text = await res.text()
+    if (!res.ok) throw new Error(text)
 
     await fetchEstimasiList()
 
@@ -505,6 +722,7 @@ const simpanData = async () => {
     console.error('Gagal simpan:', err)
   }
 }
+
 // ─────────────────────────────────────────────
 // DELETE
 // ─────────────────────────────────────────────
@@ -514,10 +732,8 @@ const deleteItem = async (id) => {
       method: "DELETE"
     })
 
-    if (!res.ok) {
-      const errText = await res.text()
-      throw new Error(errText)
-    }
+    const text = await res.text()
+    if (!res.ok) throw new Error(text)
 
     await fetchEstimasiList()
 
@@ -535,15 +751,38 @@ const openForm = () => {
 }
 
 // ─────────────────────────────────────────────
-// COMPUTED
+// COMPUTED (SEARCH + FILTER + SORT)
 // ─────────────────────────────────────────────
 const filteredList = computed(() => {
   let list = [...estimasiList.value]
 
+  // 🔍 SEARCH
   if (searchQuery.value) {
     const q = searchQuery.value.toLowerCase()
     list = list.filter(p =>
-      p.nama_proyek.toLowerCase().includes(q)
+      (p.nama_perusahaan || '').toLowerCase().includes(q)
+    )
+  }
+
+  // 🎯 FILTER JENIS
+  if (filterJenis.value) {
+    list = list.filter(p =>
+      p.jenis_ruangan === filterJenis.value
+    )
+  }
+
+  // 🔃 SORTING
+  if (sortBy.value === 'date_desc') {
+    list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+  }
+
+  if (sortBy.value === 'date_asc') {
+    list.sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+  }
+
+  if (sortBy.value === 'nama_asc') {
+    list.sort((a, b) =>
+      (a.nama_perusahaan || '').localeCompare(b.nama_perusahaan || '')
     )
   }
 
@@ -880,6 +1119,58 @@ const filteredList = computed(() => {
 }
 .btn-simpan-data:hover { background: #F4F5F7; border-color: #999; }
 
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  font-size: 12px;
+}
+
+.multiselect {
+  position: relative;
+}
+
+.multiselect__trigger {
+  border: 1.5px solid #E8E8E8;
+  border-radius: 8px;
+  padding: 11px 14px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  background: #fff;
+}
+
+.multiselect__placeholder {
+  color: #aaa;
+}
+
+.multiselect__value {
+  color: #333;
+}
+
+.multiselect__dropdown {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 100%;
+  max-height: 220px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1.5px solid #E8E8E8;
+  border-radius: 8px;
+  z-index: 10;
+  padding: 10px;
+}
+
+.multiselect__option {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  padding: 6px;
+  cursor: pointer;
+}
 /* ── Spinner ── */
 .spinner {
   display: inline-block; width: 14px; height: 14px;

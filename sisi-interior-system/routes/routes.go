@@ -2,6 +2,7 @@ package routes
 
 import (
 	"sisi-interior-system/controllers"
+	"sisi-interior-system/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,7 +24,11 @@ func SetupRoutes(r *gin.Engine) {
 		api.GET("/portfolios", controllers.GetPortfolio)
 
 		// estimasi boleh public
-		api.POST("/estimasi-biaya", controllers.EstimasiBiaya)
+		auth := api.Group("/")
+		auth.Use(middleware.AuthMiddleware())
+		{
+			auth.POST("/estimasi-biaya", controllers.EstimasiBiaya)
+		}
 
 		// AUTH
 		api.POST("/login", controllers.LoginAdmin)
@@ -42,6 +47,8 @@ func SetupRoutes(r *gin.Engine) {
 			//DATA PROYEK
 			admin.GET("/projects", controllers.GetProjects)
 			admin.POST("/projects", controllers.CreateProject)
+			admin.PUT("/projects/:id", controllers.UpdateProject)
+			admin.DELETE("/projects/:id", controllers.DeleteProject)
 
 			// DASHBOARD
 			admin.GET("/dashboard", controllers.GetDashboard)

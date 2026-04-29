@@ -1,5 +1,6 @@
 <template>
-  <div class="project-page">
+<div class="project-page" :key="showForm ? 'form' : 'list'">
+
 
     <!-- ── HEADER ── -->
     <div class="page-header">
@@ -298,13 +299,17 @@ const daftarItemOptions = [
 
 const proyekList = ref([])
 
+const loading = ref(false)
+const errorMsg = ref('')
+
 const getProjects = async () => {
+  loading.value = true
+  errorMsg.value = ''
   try {
     const res = await fetch("http://localhost:8081/api/admin/projects")
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const data = await res.json()
-    console.log("RESPONSE:", data)
-
-    // mapping ke format frontend kamu
+    
     proyekList.value = data.map(p => ({
       id: p.id,
       nama_perusahaan: p.nama_perusahaan,
@@ -318,9 +323,11 @@ const getProjects = async () => {
       harga_satuan: p.harga_satuan,
       tanggal: p.tanggal
     }))
-
   } catch (err) {
+    errorMsg.value = err.message
     console.error("Gagal ambil data:", err)
+  } finally {
+    loading.value = false
   }
 }
 
@@ -439,7 +446,11 @@ const deleteItem = async (id) => {
     console.error("Gagal delete:", err)
   }
 }
-const onAvatarError = () => { if (avatarImg.value) avatarImg.value.style.display = 'none'; if (avatarFallback.value) avatarFallback.value.style.display = 'flex' }
+const onAvatarError = async () => {
+  await nextTick()
+  if (avatarImg.value) avatarImg.value.style.display = 'none' 
+  if (avatarFallback.value) avatarFallback.value.style.display = 'flex'
+}
 </script>
 
 
