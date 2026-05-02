@@ -23,6 +23,7 @@ func ConnectDB() {
 		&models.Admin{},
 		&models.Portfolio{},
 		&models.Project{},
+		&models.Estimasi{},
 	)
 
 	if err != nil {

@@ -1,13 +1,5 @@
 <template>
 <div class="estimasi-page" :key="`view-${currentView}`">
-</xai:function_call.
-
-
-
-
-<xai:function_call name="edit_file">
-<parameter name="path">sisi-interior-main/src/views/admin/EstimasiBiaya.vue
-
     <!-- ── HEADER ── -->
     <div class="page-header">
       <h1 class="page-title">Estimasi Biaya Proyek</h1>
@@ -76,10 +68,10 @@
           <thead>
             <tr>
               <th>No</th>
-              <th>Nama Perusahaan</th>
-              <th>Jenis Proyek</th>
+              <th>Jenis Ruangan</th>
               <th>Luas Area</th>
-              <th>Biaya</th>
+              <th>Harga Proyek</th>
+              <th>Spesifikasi Design</th>
               <th>Tanggal</th>
               <th></th>
             </tr>
@@ -96,18 +88,18 @@
                 </div>
               </td>
             </tr>
-            <tr v-for="(item, index) in filteredList" :key="item.id">
-              <td class="td-no">{{ index + 1 }}</td>
-              <td class="td-main">{{ item.nama_perusahaan }}</td>
+            <tr v-for="(item, index) in paginatedList" :key="item.id">
+              <td class="td-no">{{ (currentPage - 1) * perPage + index + 1 }}</td>
+              <td class="td-main">{{ item.jenis_ruangan}}</td>
               <td class="td-cell">
-                <span class="badge" :class="badgeClass(item.jenis_ruangan)">{{ item.jenis_ruangan }}</span>
+                <span class="badge" :class="badgeClass(item.jenis_proyek)">{{ item.luas_area }}</span>
               </td>
-              <td class="td-cell">{{ item.luas_area }}</td>
+              <td class="td-cell">{{ item.harga_proyek }}</td>
               <td class="td-cell td-file">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                {{ item.biayaFile }}
+                {{ item.spesifikasi_design}}
               </td>
-              <td class="td-cell td-muted">{{ formatTanggal(item.tanggal) }}</td>
+              <td class="td-cell td-muted">{{ formatTanggal(item.created_at) }}</td>
               <td class="td-aksi">
                 <button class="action-btn action-btn--edit" @click="viewHasil(item)" title="Lihat Hasil">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -130,7 +122,15 @@
 
         <!-- Pagination -->
         <div class="pagination-bar">
-          <span class="pagination-info">Showing <strong>1-{{ Math.min(perPage, filteredList.length) }}</strong> from <strong>{{ filteredList.length }}</strong> data</span>
+          <span class="pagination-info">
+            Showing 
+            <strong>
+              {{ (currentPage - 1) * perPage + 1 }}
+              -
+              {{ Math.min(currentPage * perPage, filteredList.length) }}
+            </strong>
+            from <strong>{{ filteredList.length }}</strong> data
+          </span>
           <div class="pagination-pages">
             <button class="page-btn" :disabled="currentPage === 1" @click="currentPage--">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
@@ -215,18 +215,18 @@
           </div>
           
           <div class="field">
-            <label class="field__label">Daftar Item</label>
+            <label class="field__label">Jenis Ruangan</label>
 
             <div class="multiselect" ref="multiRef">
               
               <!-- Trigger -->
               <div class="multiselect__trigger" @click="toggleMultiSelect">
-                <span v-if="form.daftar_item.length === 0" class="multiselect__placeholder">
-                  Silahkan pilih beberapa daftar item
+                <span v-if="form.jenis_ruangan.length === 0" class="multiselect__placeholder">
+                  Silahkan pilih beberapa jenis
                 </span>
 
                 <span v-else class="multiselect__value">
-                  {{ form.daftar_item.join(', ') }}
+                  {{ form.jenis_ruangan.join(', ') }}
                 </span>
 
                 <svg class="multiselect__arrow" width="16" height="16"
@@ -245,7 +245,7 @@
                   <input
                     type="checkbox"
                     :value="item"
-                    v-model="form.daftar_item"
+                    v-model="form.jenis_ruangan"
                   />
                   <span>{{ item }}</span>
                 </label>
@@ -278,10 +278,10 @@
           </div>
 
           <div class="field">
-            <label class="field__label">Konsep/Gaya Desain</label>
+            <label class="field__label">Spesifikasi Design</label>
             <div class="field__select-wrap">
-              <select v-model="form.konsepDesain" class="field__select">
-                <option value="" disabled>Pilih konsep/gaya desain</option>
+              <select v-model="form.spesifikasi_design" class="field__select">
+                <option value="" disabled>Pilih spesifikasi design</option>
                 <option>Japandi</option>
                 <option>Industrial</option>
                 <option>Scandinavian</option>
@@ -300,20 +300,19 @@
           <div class="field">
             <label class="field__label">Material Khusus</label>
             <div class="field__select-wrap">
-              <select v-model="form.material_khusus" class="field__select">
-                <option value="" disabled>Pilih material khusus</option>
+              <select v-model="form.material_khusus">
+                <option value="">Opsional</option>
                 <option>Kayu Jati</option>
                 <option>Kayu Pinus</option>
                 <option>Baja</option>
                 <option>Marmer</option>
-                <option>Granit</option>
-                <option>Kaca Tempered</option>
               </select>
+
               <input
+                v-if="form.material_khusus === ''"
                 v-model="form.material_khusus"
                 type="text"
-                class="field__input"
-                placeholder="Opsional (contoh: marmer, baja ringan)"
+                placeholder="Custom material"
               />
               <svg class="field__select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
@@ -403,7 +402,7 @@
 
               <tr>
                 <td>Jenis Proyek</td>
-                <td>{{ activeItem?.jenis_ruangan || form.jenis_ruangan || '–' }}</td>
+                <td>{{ activeItem?.jenis_proyek || form.jenis_proyek || '–' }}</td>
               </tr>
 
               <tr>
@@ -473,7 +472,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeMount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 
 const multiSelectOpen = ref(false)
 const multiRef = ref(null)
@@ -531,38 +530,35 @@ const onAvatarError = async () => {
 const emptyForm = () => ({
   nama_perusahaan: '',
   luas_area: '',
-  jenis_proyek: '',
-  jenis_proyek_lainnya: '',
+  jenis_ruangan: [],
   jenis_pekerjaan: '',
   tingkat_kerumitan: '',
-  durasi_pengerjaan: '',
+  durasi_pengerjaan: '', //
   lokasi_proyek: '',
   spesifikasi_design: '',
   material_khusus: '',
-  daftar_item: '',
   kebutuhan_tambahan: '',
 })
-
 const daftarItemOptions = [
-  // 🏠 Rumah
+  //  Rumah
   "Living Room", "Master Room", "Bed Room", "Kitchen",
   "Dining Room", "Bath Room / Toilet", "Service Area",
   "Workspace", "Indoor Area", "Outdoor Area",
   "Backyard Garden", "Side Terrace",
 
-  // 🏢 Kantor
+  // Kantor
   "Lobby", "Director Room", "Manager Room", "Staff Room",
   "Office Room", "Meeting Room", "Waiting Room",
   "Consultation Room", "Treatment Room", "Training Room",
   "Cashier", "Canteen Area", "Mushalla",
 
-  // 🐾 Bisnis
+  //  Bisnis
   "Pet Shop", "Pet Hotel", "Grooming Room", "Pet Clinic",
 
-  // 🛠️ Khusus
+  //  Khusus
   "Understair Cabinet", "Kitchen Area", "Kitchen Set", "Kontainer Mart",
 
-  // 🪑 Furniture
+  //  Furniture
   "Bar Table", "Coffee Table", "Wooden Bench",
   "Wall Panel", "Pendant Lamp", "Backdrop Logo"
 ]
@@ -643,22 +639,20 @@ const prosesEstimasi = async () => {
   isLoading.value = true
 
   try {
-    const payload = {
-      nama_proyek: form.value.nama_perusahaan,
+const payload = {
+      nama_perusahaan: form.value.nama_perusahaan,
       luas_area: Number(form.value.luas_area),
-      jenis_ruangan: form.value.jenis_proyek === 'lainnya'
-        ? form.value.jenis_proyek_lainnya
-        : form.value.jenis_proyek,
+      jenis_ruangan: form.value.jenis_ruangan,
       jenis_pekerjaan: form.value.jenis_pekerjaan,
       tingkat_kerumitan: form.value.tingkat_kerumitan,
       durasi_pengerjaan: Number(form.value.durasi_pengerjaan),
-      
       lokasi_proyek: form.value.lokasi_proyek,
       spesifikasi_design: form.value.spesifikasi_design,
       material_khusus: form.value.material_khusus || null,
-      daftar_item: form.value.daftar_item.join(', '), 
       kebutuhan_tambahan: form.value.kebutuhan_tambahan,
     }
+
+    console.log("PAYLOAD FIX:", payload)
 
     const res = await fetch(`${API_BASE_URL}/admin/estimasi`, {
       method: "POST",
@@ -686,7 +680,6 @@ const prosesEstimasi = async () => {
     isLoading.value = false
   }
 }
-
 // ─────────────────────────────────────────────
 // SIMPAN DATA
 // ─────────────────────────────────────────────
@@ -696,12 +689,14 @@ const simpanData = async () => {
       nama_perusahaan: form.value.nama_perusahaan,
       luas_area: Number(form.value.luas_area),
       jenis_ruangan: form.value.jenis_ruangan,
+      jenis_pekerjaan: form.value.jenis_pekerjaan,
       tingkat_kerumitan: form.value.tingkat_kerumitan,
       durasi_pengerjaan: Number(form.value.durasi_pengerjaan),
       lokasi_proyek: form.value.lokasi_proyek,
       spesifikasi_design: form.value.spesifikasi_design,
       material_khusus: form.value.material_khusus,
       kebutuhan_tambahan: form.value.kebutuhan_tambahan,
+      harga_proyek: hasilEstimasi.value.rekomendasi
     }
 
     const res = await fetch(`${API_BASE_URL}/admin/estimasi`, {
@@ -756,6 +751,11 @@ const openForm = () => {
 const filteredList = computed(() => {
   let list = [...estimasiList.value]
 
+// RESET PAGE kalau search / filter berubah
+// watch([searchQuery, filterJenis], () => {
+//   currentPage.value = 1
+// })
+
   // 🔍 SEARCH
   if (searchQuery.value) {
     const q = searchQuery.value.toLowerCase()
@@ -764,14 +764,14 @@ const filteredList = computed(() => {
     )
   }
 
-  // 🎯 FILTER JENIS
+  // FILTER JENIS
   if (filterJenis.value) {
     list = list.filter(p =>
-      p.jenis_ruangan === filterJenis.value
+      p.jenis_proyek === filterJenis.value
     )
   }
 
-  // 🔃 SORTING
+  // SORTING
   if (sortBy.value === 'date_desc') {
     list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
   }
@@ -788,6 +788,22 @@ const filteredList = computed(() => {
 
   return list
 })
+
+  // PAGINATION SLICE DATA
+const paginatedList = computed(() => {
+  const start = (currentPage.value - 1) * perPage.value
+  const end = start + perPage.value
+  return filteredList.value.slice(start, end)
+})
+
+const totalPages = computed(() => {
+  return Math.ceil(filteredList.value.length / perPage.value) || 1
+})
+
+watch([searchQuery, filterJenis], () => {
+  currentPage.value = 1
+})
+
 </script>
 
 <style scoped>

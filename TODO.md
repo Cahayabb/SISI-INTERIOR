@@ -1,58 +1,25 @@
-# Restore CRUD Functionality & Fix Vue Hydration Errors
+# Fix EstimasiBiaya Bad Request 400 Error
 
-## Plan Overview
-✅ **Approved**: Complete missing backend endpoints + frontend hydration fixes
+## Problem Analysis
+The API returns 400 Bad Request with error: "Nama perusahaan dan luas area wajib diisi"
 
-**Status**: 0/10 ✅
+## Root Cause
+**Field name mismatch:**
+- Frontend (EstimasiBiaya.vue) sends: `nama_proyek`
+- Backend (estimasi_controllers.go) expects: `nama_perusahaan`
 
-## Step-by-Step Implementation
+When the request is sent, the backend receives an empty `NamaPerusahaan` field because it's looking for the wrong JSON key.
 
-### 🔴 **1. Backend: Add Missing Project DELETE/PUT** (project_controller.go)
-```
-[X] DELETE /api/admin/projects/:id  
-[X] PUT /api/admin/projects/:id (edit)
-```
+## Fix Plan
+1. Update EstimasiBiaya.vue: Change `nama_proyek` → `nama_perusahaan` in payload
+2. Verify any other field mismatches:
+   - Frontend: `jenis_proyek` → Check backend expects `jenis_proyek` ✅ (matches)
+   - Frontend: `tingkat_kerumitan` → Check backend expects string but frontend sends number → need to send string text (e.g., "Mudah", "Sedang", "Sulit") instead of number
 
-### 🔴 **2. Frontend: Fix Project.vue Hydration** 
-```
-[X] Add :key to conditional templates
-[X] nextTick() for DOM refs  
-[X] Better error handling + loading states
-[X] Fix DELETE call (now backend-ready)
-```
+## Files to Edit
+- sisi-interior-main/src/views/admin/EstimasiBiaya.vue
 
-### 🔴 **3. Frontend: Fix EstimasiBiaya.vue Hydration**
-```
-[X] Fix multiRef + click-outside
-[X] Add keys + nextTick
-[X] Loading/error states
-```
-
-### 🟡 **4. Test Backend Endpoints**
-```
-[X] curl POST/GET/DELETE/PUT project
-[X] curl POST/GET/DELETE estimasi
-[X] Restart Go server: cd sisi-interior-system && go run main.go
-```
-
-### 🟡 **5. Full E2E Test**
-```
-[X] Login admin → /admin/proyek → CRUD works
-[X] /admin/estimasi → CRUD works  
-[X] Browser console: No hydration errors
-[X] Database: Data persists
-```
-
-### 🟢 **6. Polish & Optimize**
-```
-[X] Add PUT for estimasi (optional)
-[X] Pagination fixes
-[X] Better UX feedback
-```
-
-**Next**: Starting with Backend → Step 1
-
----
-
-**Progress**: 0/6 complete | Last Updated: Now**
-
+## Expected Result
+- API call successfully sends proper field names
+- Validation passes
+- Estimasi calculation works correctly

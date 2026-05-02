@@ -201,7 +201,10 @@ const buildChart = () => {
   const peakIdx = d.peak.index
 
   // Load Chart.js from CDN — injected once
-  if (!window.Chart) return
+  if (!window.Chart) {
+    console.warn('Chart.js belum ready')
+    return
+  }
 
   const Chart = window.Chart
   const ctx = chartCanvas.value.getContext('2d')
@@ -230,16 +233,9 @@ const buildChart = () => {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: ctx => ctx.parsed.y.toLocaleString('id-ID'),
-          },
-        },
         // inline annotation for peak tooltip bubble
         afterDraw: undefined,
-      },
+
       scales: {
         x: {
           grid: { color: 'rgba(0,0,0,0.04)', drawBorder: false },
@@ -263,11 +259,16 @@ const buildChart = () => {
     plugins: [{
       id: 'peakAnnotation',
       afterDraw(chart) {
-        const { ctx, chartArea, scales } = chart
-        const x = scales.x.getPixelForIndex(peakIdx)
+        const { ctx, chartArea } = chart
+
+        const meta = chart.getDatasetMeta(0)
+        const point = meta.data[peakIdx]
+        if (!point) return
+
+        const x = point.x
+        const yVal = point.y
         const yTop = chartArea.top
         const yBot = chartArea.bottom
-        const yVal = scales.y.getPixelForValue(d.values[peakIdx])
 
         // dashed vertical line (red)
         ctx.save()
@@ -364,9 +365,14 @@ onMounted(() => {
   }
 })
 
-onUnmounted(() => { if (chartInstance) chartInstance.destroy() })
+onUnmounted(() => { 
+  if (chartInstance) {
+    chartInstance.destroy()
+    chartInstance = null
+  }
+})
 
-watch(chartPeriod, () => loadTren())
+watch(chartPeriod, loadTren)
 
 // ─────────────────────────────────────────────
 // HELPERS

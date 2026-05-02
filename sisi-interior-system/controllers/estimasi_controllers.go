@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"sisi-interior-system/config"
 	"sisi-interior-system/models"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,14 +15,13 @@ import (
 type EstimasiRequest struct {
 	NamaPerusahaan    string   `json:"nama_perusahaan"`
 	LuasArea          float64  `json:"luas_area"`
+	JenisRuangan      []string `json:"jenis_ruangan"`
+	JenisPekerjaan    string   `json:"jenis_pekerjaan"`
 	TingkatKerumitan  string   `json:"tingkat_kerumitan"`
 	DurasiPengerjaan  int      `json:"durasi_pengerjaan"`
-	JenisRuangan      string   `json:"jenis_ruangan"`
-	JenisPekerjaan    string   `json:"jenis_pekerjaan"`
-	SpesifikasiDesign string   `json:"spesifikasi_design"`
 	LokasiProyek      string   `json:"lokasi_proyek"`
+	SpesifikasiDesign string   `json:"spesifikasi_design"`
 	MaterialKhusus    *string  `json:"material_khusus"`
-	DaftarItem        []string `json:"daftar_item"`
 	KebutuhanTambahan string   `json:"kebutuhan_tambahan"`
 }
 
@@ -76,7 +76,7 @@ func EstimasiBiaya(c *gin.Context) {
 	}
 
 	// 5. Hitung jumlah item
-	jumlahItem := float64(len(req.DaftarItem))
+	jumlahItem := float64(len(req.JenisRuangan))
 
 	// 6. Estimasi dasar
 	basePrice := req.LuasArea * 1000000
@@ -86,28 +86,20 @@ func EstimasiBiaya(c *gin.Context) {
 		(jumlahItem * 500000) +
 		(float64(req.DurasiPengerjaan) * 200000)
 
-	// 8. Convert daftar item ke string (kalau DB masih string)
-	daftarItemStr := ""
-	if len(req.DaftarItem) > 0 {
-		daftarItemStr = req.DaftarItem[0]
-		for i := 1; i < len(req.DaftarItem); i++ {
-			daftarItemStr += ", " + req.DaftarItem[i]
-		}
-	}
+	JenisRuanganStr := strings.Join(req.JenisRuangan, ", ")
 
 	// 9. Mapping ke model
 	data := models.Estimasi{
 		NamaPerusahaan:    req.NamaPerusahaan,
 		LuasArea:          req.LuasArea,
+		JenisRuangan:      JenisRuanganStr,
+		JenisPekerjaan:    req.JenisPekerjaan,
 		TingkatKerumitan:  req.TingkatKerumitan,
 		DurasiPengerjaan:  req.DurasiPengerjaan,
-		JenisRuangan:      req.JenisRuangan,
-		JenisPekerjaan:    req.JenisPekerjaan,
-		SpesifikasiDesign: req.SpesifikasiDesign,
 		LokasiProyek:      req.LokasiProyek,
+		SpesifikasiDesign: req.SpesifikasiDesign,
 		KebutuhanTambahan: req.KebutuhanTambahan,
-		HargaProyek:       estimasi,
-		DaftarItem:        daftarItemStr,
+		HargaProyek:       int64(estimasi),
 	}
 
 	// optional field
@@ -116,7 +108,7 @@ func EstimasiBiaya(c *gin.Context) {
 	}
 
 	// 10. Simpan ke DB
-	result := config.DB.Table("data_proyek").Create(&data)
+	result := config.DB.Table("estimasi_proyek").Create(&data)
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": result.Error.Error(),
@@ -137,8 +129,8 @@ func EstimasiBiaya(c *gin.Context) {
 func GetEstimasi(c *gin.Context) {
 	var data []models.Estimasi
 
-	result := config.DB.Table("data_proyek").
-		Order("id DESC").
+	result := config.DB.Table("estimasi_proyek").
+		Order("created_at DESC").
 		Find(&data)
 
 	if result.Error != nil {
@@ -164,9 +156,9 @@ func DeleteEstimasi(c *gin.Context) {
 		return
 	}
 
-	result := config.DB.Table("data_proyek").
+	result := config.DB.Table("estimasi_proyek").
 		Where("id = ?", id).
-		Delete(nil)
+		Delete(&models.Estimasi{})
 
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
