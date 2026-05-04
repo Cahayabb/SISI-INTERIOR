@@ -25,18 +25,18 @@ const router = createRouter({
       meta: { guestOnly: true },
     },
 
-    // ── Customer ──
+    // ── users
     {
       path: '/estimasi',
       name: 'estimasi',
-      component: () => import('../views/customer/Estimasi.vue'),
-      meta: { requiresAuth: true, role: 'customer' },
+      component: () => import('../views/Estimasi.vue'),
+      meta: { requiresAuth: true, role: 'users'},
     },
     {
       path: '/profile',
       name: 'profile',
-      component: () => import('../views/customer/Profile.vue'),
-      meta: { requiresAuth: true, role: 'customer' },
+      component: () => import('../views/Profile.vue'),
+      meta: { requiresAuth: true, role: 'users'},
     },
 
     {

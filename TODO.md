@@ -1,19 +1,13 @@
-# Full Backend/Frontend Integration & Error Fixes
+# Fix API Errors Task
 
-**Backend (sisi-interior-system):**
-- [x] Portfolio controller fixed
-- [ ] Enable auth middleware
-- [ ] Fix any controller errors
-- [ ] Start API: cd sisi-interior-system && go run main.go (or use exe)
+## Status: In Progress
 
-**Frontend (sisi-interior-main):**
-- [ ] Fix Portfolio.vue JS bugs (typo formDataF, url template, headers)
-- [ ] Integrate auth token from localStorage in api calls
-- [ ] Update router for protected routes
-- [ ] npm install && npm run dev
+### Steps:
+- [x] 1. Copy favicon.ico from frontend to backend uploads/ for serving
+- [ ] 2. Start ML prediction server (python sisi-interior-system/machine_learning/predict_api.py)
+- [ ] 3. Refactor sisi-interior-system/controllers/estimasi_controllers.go: Fix GetEstimasi() - add ML error handling/fallback, replace ioutil.ReadAll, handle resp errors
+- [ ] 4. Update sisi-interior-system/main.go: Add /favicon.ico static serve
+- [ ] 5. Restart Go server and test endpoints (no 404/500)
+- [ ] 6. Update TODO.md as complete
 
-**DB:**
-- [ ] Postgres running localhost:5433 db=sisiinterior user=postgres pw=123
-- [ ] Tables migrated on API start
-
-**Current Step 1: Fix Portfolio.vue**
+Current step: 2/6 (retry)

@@ -1,6 +1,5 @@
 <template>
-  <div class="estimasi-page">
-
+<div class="estimasi-page" :key="`view-${currentView}`">
     <!-- ── HEADER ── -->
     <div class="page-header">
       <h1 class="page-title">Estimasi Biaya Proyek</h1>
@@ -21,9 +20,9 @@
         <div class="avatar">
           <img src="" alt="User" @error="onAvatarError" ref="avatarImg" />
           <div class="avatar-fallback" ref="avatarFallback">A</div>
-        </div>
       </div>
     </div>
+     </div>
 
     <!-- ══════════════════════════════════════
          VIEW 1: LIST DATA ESTIMASI TERSIMPAN
@@ -48,10 +47,18 @@
               <svg class="select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
           </div>
-          <button class="btn-filter">
+          <button class="btn-filter" @click="showFilter = !showFilter">
             Filter
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
           </button>
+          <div v-if="showFilter" class="filter-box">
+          <select v-model="filterJenis">
+            <option value="">Semua Jenis</option>
+            <option>Custom Furniture</option>
+            <option>Desain Interior</option>
+            <option>Renovasi</option>
+          </select>
+        </div>
         </div>
       </div>
 
@@ -61,10 +68,10 @@
           <thead>
             <tr>
               <th>No</th>
-              <th>Nama Proyek</th>
-              <th>Jenis Proyek</th>
-              <th>Luas Ruangan</th>
-              <th>Biaya</th>
+              <th>Jenis Ruangan</th>
+              <th>Luas Area</th>
+              <th>Harga Proyek</th>
+              <th>Spesifikasi Design</th>
               <th>Tanggal</th>
               <th></th>
             </tr>
@@ -81,18 +88,18 @@
                 </div>
               </td>
             </tr>
-            <tr v-for="(item, index) in filteredList" :key="item.id">
-              <td class="td-no">{{ index + 1 }}</td>
-              <td class="td-main">{{ item.namaProyek }}</td>
+            <tr v-for="(item, index) in paginatedList" :key="item.id">
+              <td class="td-no">{{ (currentPage - 1) * perPage + index + 1 }}</td>
+              <td class="td-main">{{ item.jenis_ruangan}}</td>
               <td class="td-cell">
-                <span class="badge" :class="badgeClass(item.jenisProyek)">{{ item.jenisProyek }}</span>
+                <span class="badge" :class="badgeClass(item.jenis_proyek)">{{ item.luas_area }}</span>
               </td>
-              <td class="td-cell">{{ item.luasRuangan }}</td>
+              <td class="td-cell">{{ item.harga_proyek }}</td>
               <td class="td-cell td-file">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                {{ item.biayaFile }}
+                {{ item.spesifikasi_design}}
               </td>
-              <td class="td-cell td-muted">{{ formatTanggal(item.tanggal) }}</td>
+              <td class="td-cell td-muted">{{ formatTanggal(item.created_at) }}</td>
               <td class="td-aksi">
                 <button class="action-btn action-btn--edit" @click="viewHasil(item)" title="Lihat Hasil">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -115,7 +122,15 @@
 
         <!-- Pagination -->
         <div class="pagination-bar">
-          <span class="pagination-info">Showing <strong>1-{{ Math.min(perPage, filteredList.length) }}</strong> from <strong>{{ filteredList.length }}</strong> data</span>
+          <span class="pagination-info">
+            Showing 
+            <strong>
+              {{ (currentPage - 1) * perPage + 1 }}
+              -
+              {{ Math.min(currentPage * perPage, filteredList.length) }}
+            </strong>
+            from <strong>{{ filteredList.length }}</strong> data
+          </span>
           <div class="pagination-pages">
             <button class="page-btn" :disabled="currentPage === 1" @click="currentPage--">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
@@ -150,34 +165,99 @@
         <div class="form-card">
           <div class="form-grid-2">
             <div class="field">
-              <label class="field__label">Nama Proyek</label>
-              <input v-model="form.namaProyek" type="text" class="field__input" placeholder="" />
+              <label class="field__label">Nama Perusahaan</label>
+              <input v-model="form.nama_perusahaan" type="text" class="field__input" placeholder="" />
             </div>
             <div class="field">
-              <label class="field__label">Luas Ruangan (m²)</label>
-              <input v-model="form.luasRuangan" type="text" class="field__input" placeholder="" />
+              <label class="field__label">Luas Area (m²)</label>
+              <input v-model="form.luas_area" type="text" class="field__input" placeholder="" />
             </div>
           </div>
 
           <div class="field">
             <label class="field__label">Jenis Proyek</label>
             <div class="field__select-wrap">
-              <select v-model="form.jenisProyek" class="field__select">
+              <select v-model="form.jenis_proyek" class="field__select">
                 <option value="" disabled>Pilih jenis proyek</option>
-                <option>Custom Furniture</option>
-                <option>Desain Interior</option>
-                <option>Alat Deteksi</option>
-                <option>Alat Identifikasi</option>
-                <option>Renovasi</option>
+                <option>Rumah</option>
+                <option>Apartment</option>
+                <option>Cafe</option>
+                <option>Kantor</option>
+                <option>Clinic</option>
+                <option>Tenant</option>
+                <option>Kost</option>
+                <option>SPA</option>
+                <option value="lainnya">Lainnya</option>
               </select>
+
+
+              <input
+                v-if="form.jenis_proyek === 'lainnya'"
+                v-model="form.jenis_proyek_lainnya"
+                type="text"
+                class="field__input"
+                placeholder="Masukkan jenis proyek lainnya"
+              />
               <svg class="field__select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field__label">Jenis Pekerjaan</label>
+            <select v-model="form.jenis_pekerjaan" class="field__select">
+              <option value="" disabled>Pilih jenis pekerjaan</option>
+              <option>Design</option>
+              <option>Build / Fit Out</option>
+              <option>Furniture</option>
+              <option>MEP (Mechanical Electrical Plumbing)</option>
+              <option>Maintenance</option>
+            </select>
+          </div>
+          
+          <div class="field">
+            <label class="field__label">Jenis Ruangan</label>
+
+            <div class="multiselect" ref="multiRef">
+              
+              <!-- Trigger -->
+              <div class="multiselect__trigger" @click="toggleMultiSelect">
+                <span v-if="form.jenis_ruangan.length === 0" class="multiselect__placeholder">
+                  Silahkan pilih beberapa jenis
+                </span>
+
+                <span v-else class="multiselect__value">
+                  {{ form.jenis_ruangan.join(', ') }}
+                </span>
+
+                <svg class="multiselect__arrow" width="16" height="16"
+                  :style="{ transform: multiSelectOpen ? 'rotate(180deg)' : 'rotate(0deg)' }">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </div>
+
+              <!-- Dropdown -->
+              <div v-if="multiSelectOpen" class="multiselect__dropdown">
+                <label 
+                  v-for="item in daftarItemOptions" 
+                  :key="item" 
+                  class="multiselect__option"
+                >
+                  <input
+                    type="checkbox"
+                    :value="item"
+                    v-model="form.jenis_ruangan"
+                  />
+                  <span>{{ item }}</span>
+                </label>
+              </div>
+
             </div>
           </div>
 
           <div class="field">
             <label class="field__label">Tingkat Kerumitan</label>
             <div class="field__select-wrap">
-              <select v-model="form.tingkatKerumitan" class="field__select">
+              <select v-model="form.tingkat_kerumitan" class="field__select">
                 <option value="" disabled>Pilih tingkat kerumitan</option>
                 <option>Mudah</option>
                 <option>Sedang</option>
@@ -189,19 +269,19 @@
 
           <div class="field">
             <label class="field__label">Durasi Pengerjaan (hari)</label>
-            <input v-model="form.durasiPengerjaan" type="number" class="field__input" placeholder="" />
+            <input v-model="form.durasi_pengerjaan" type="number" class="field__input" placeholder="" />
           </div>
 
           <div class="field">
             <label class="field__label">Lokasi Proyek</label>
-            <input v-model="form.lokasiProyek" type="text" class="field__input" placeholder="" />
+            <input v-model="form.lokasi_proyek" type="text" class="field__input" placeholder="" />
           </div>
 
           <div class="field">
-            <label class="field__label">Konsep/Gaya Desain</label>
+            <label class="field__label">Spesifikasi Design</label>
             <div class="field__select-wrap">
-              <select v-model="form.konsepDesain" class="field__select">
-                <option value="" disabled>Pilih konsep/gaya desain</option>
+              <select v-model="form.spesifikasi_design" class="field__select">
+                <option value="" disabled>Pilih spesifikasi design</option>
                 <option>Japandi</option>
                 <option>Industrial</option>
                 <option>Scandinavian</option>
@@ -220,29 +300,34 @@
           <div class="field">
             <label class="field__label">Material Khusus</label>
             <div class="field__select-wrap">
-              <select v-model="form.materialKhusus" class="field__select">
-                <option value="" disabled>Pilih material khusus</option>
+              <select v-model="form.material_khusus">
+                <option value="">Opsional</option>
                 <option>Kayu Jati</option>
                 <option>Kayu Pinus</option>
                 <option>Baja</option>
                 <option>Marmer</option>
-                <option>Granit</option>
-                <option>Kaca Tempered</option>
               </select>
+
+              <input
+                v-if="form.material_khusus === ''"
+                v-model="form.material_khusus"
+                type="text"
+                placeholder="Custom material"
+              />
               <svg class="field__select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
           </div>
 
           <div class="field">
             <label class="field__label">Kebutuhan Tambahan</label>
-            <textarea v-model="form.kebutuhanTambahan" class="field__textarea" placeholder="Additional information" rows="3"></textarea>
+            <textarea v-model="form.kebutuhan_tambahan" class="field__textarea" placeholder="Additional information" rows="3"></textarea>
           </div>
 
           <div class="form-footer">
             <button class="btn-reset" @click="resetForm">Reset</button>
             <button class="btn-simpan" @click="prosesEstimasi" :disabled="isLoading">
               <span v-if="isLoading" class="spinner"></span>
-              <span v-else>Simpan</span>
+              <span v-else>Proses</span>
             </button>
           </div>
         </div>
@@ -251,16 +336,16 @@
           <h3 class="ringkasan-title">Ringkasan Input</h3>
           <div class="ringkasan-rows">
             <div class="ringkasan-row">
-              <span class="ringkasan-label">Luas Ruangan (m²)</span>
-              <span class="ringkasan-value">{{ form.luasRuangan || '–' }} <span v-if="form.luasRuangan">x {{ form.luasRuangan }}m²</span></span>
+              <span class="ringkasan-label">Luas Area (m²)</span>
+              <span class="ringkasan-value">{{ form.luas_area || '–' }} <span v-if="form.luas_area">x {{ form.luas_area }}m²</span></span>
             </div>
             <div class="ringkasan-row">
               <span class="ringkasan-label">Kerumitan</span>
-              <span class="ringkasan-value">{{ form.tingkatKerumitan || '–' }}</span>
+              <span class="ringkasan-value">{{ form.tingkat_kerumitan || '–' }}</span>
             </div>
             <div class="ringkasan-row">
               <span class="ringkasan-label">Durasi</span>
-              <span class="ringkasan-value">{{ form.durasiPengerjaan ? form.durasiPengerjaan + ' Hari' : '–' }}</span>
+             <span class="ringkasan-value">{{ form.durasi_pengerjaan ? form.durasi_pengerjaan + ' Hari' : '–' }}</span>
             </div>
           </div>
 
@@ -305,15 +390,58 @@
               </tr>
             </thead>
             <tbody>
-              <tr><td>Nama Proyek</td><td>{{ activeItem?.namaProyek || form.namaProyek }}</td></tr>
-              <tr><td>Luas Ruangan</td><td>{{ activeItem?.luasRuangan || form.luasRuangan }}</td></tr>
-              <tr><td>Jenis Proyek</td><td>{{ activeItem?.jenisProyek || form.jenisProyek }}</td></tr>
-              <tr><td>Tingkat Kerumitan</td><td>{{ activeItem?.tingkatKerumitan || form.tingkatKerumitan }}</td></tr>
-              <tr><td>Durasi Pengerjaan</td><td>{{ activeItem?.durasiPengerjaan ? activeItem.durasiPengerjaan + ' Hari' : (form.durasiPengerjaan ? form.durasiPengerjaan + ' Hari' : '–') }}</td></tr>
-              <tr><td>Lokasi Proyek</td><td>{{ activeItem?.lokasiProyek || form.lokasiProyek }}</td></tr>
-              <tr><td>Konsep/Desain</td><td>{{ activeItem?.konsepDesain || form.konsepDesain }}</td></tr>
-              <tr><td>Material Khusus</td><td>{{ activeItem?.materialKhusus || form.materialKhusus }}</td></tr>
-              <tr><td>Kebutuhan Tambahan</td><td>{{ activeItem?.kebutuhanTambahan || form.kebutuhanTambahan || '–' }}</td></tr>
+              <tr>
+                <td>Nama Perusahaan</td>
+                <td>{{ activeItem?.nama_perusahaan || form.nama_perusahaan || '–' }}</td>
+              </tr>
+
+              <tr>
+                <td>Luas Area</td>
+                <td>{{ activeItem?.luas_area || form.luas_area || '–' }}</td>
+              </tr>
+
+              <tr>
+                <td>Jenis Proyek</td>
+                <td>{{ activeItem?.jenis_proyek || form.jenis_proyek || '–' }}</td>
+              </tr>
+
+              <tr>
+                <td>Tingkat Kerumitan</td>
+                <td>{{ activeItem?.tingkat_kerumitan || form.tingkat_kerumitan || '–' }}</td>
+              </tr>
+
+              <tr>
+                <td>Durasi Pengerjaan</td>
+                <td>
+                  {{
+                    activeItem?.durasi_pengerjaan
+                      ? activeItem.durasi_pengerjaan + ' Hari'
+                      : (form.durasi_pengerjaan
+                          ? form.durasi_pengerjaan + ' Hari'
+                          : '–')
+                  }}
+                </td>
+              </tr>
+
+              <tr>
+                <td>Lokasi Proyek</td>
+                <td>{{ activeItem?.lokasi_proyek || form.lokasi_proyek || '–' }}</td>
+              </tr>
+
+              <tr>
+                <td>Spesifikasi Desain</td>
+                <td>{{ activeItem?.spesifikasi_design || form.spesifikasi_design || '–' }}</td>
+              </tr>
+
+              <tr>
+                <td>Material Khusus</td>
+                <td>{{ activeItem?.material_khusus || form.material_khusus || '–' }}</td>
+              </tr>
+
+              <tr>
+                <td>Kebutuhan Tambahan</td>
+                <td>{{ activeItem?.kebutuhan_tambahan || form.kebutuhan_tambahan || '–' }}</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -323,18 +451,24 @@
           <div class="hasil-result-rows">
             <div class="hasil-result-row">
               <span class="hasil-result-label">Minimum</span>
-              <span class="hasil-result-value">{{ formatRupiah(hasilEstimasi.minimum) }}</span>
+              <span class="hasil-result-value">{{ formatRupiah(hasilEstimasi?.minimum || 0) }}</span>
             </div>
             <div class="hasil-result-row">
               <span class="hasil-result-label">Maksimum</span>
-              <span class="hasil-result-value">{{ formatRupiah(hasilEstimasi.maksimum) }}</span>
+              <span class="hasil-result-value">{{ formatRupiah(hasilEstimasi?.maksimum || 0) }}</span>
             </div>
             <div class="hasil-result-row highlight">
               <span class="hasil-result-label">Rekomendasi</span>
-              <span class="hasil-result-value hasil-result-value--gold">{{ formatRupiah(hasilEstimasi.rekomendasi) }}</span>
+              <span class="hasil-result-value hasil-result-value--gold">{{ formatRupiah(hasilEstimasi?.rekomendasi || 0) }}</span>
             </div>
           </div>
-          <button class="btn-simpan-data" @click="simpanData">Simpan Data</button>
+          <button 
+            class="btn-simpan-data" 
+            @click="simpanData"
+            :disabled="!hasilEstimasi"
+          >
+            Simpan Data
+          </button>
         </div>
 
       </div>
@@ -344,18 +478,37 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
+
+const multiSelectOpen = ref(false)
+const multiRef = ref(null)
+
+const toggleMultiSelect = () => {
+  multiSelectOpen.value = !multiSelectOpen.value
+}
+
+// close kalau klik luar
+const handleClickOutside = (event) => {
+  if (multiRef.value && !multiRef.value.contains(event.target)) {
+    multiSelectOpen.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
+
 
 // ─────────────────────────────────────────────
 // API CONFIG 
 // ─────────────────────────────────────────────
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081/api'
+const API_BASE_URL_ML = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/'
 
-// TODO: uncomment saat backend siap
-// const fetchEstimasiList  = () => fetch(`${API_BASE_URL}/estimasi`).then(r => r.json())
-// const postEstimasi       = (payload) => fetch(`${API_BASE_URL}/estimasi`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).then(r => r.json())
-// const deleteEstimasi     = (id) => fetch(`${API_BASE_URL}/estimasi/${id}`, { method: 'DELETE' })
-// const getEstimasiById    = (id) => fetch(`${API_BASE_URL}/estimasi/${id}`).then(r => r.json())
 
 // ─────────────────────────────────────────────
 // STATE
@@ -367,189 +520,298 @@ const currentPage  = ref(1)
 const perPage      = ref(12)
 const isLoading    = ref(false)
 const activeItem   = ref(null)
-const avatarImg    = ref(null)
-const avatarFallback = ref(null)
+const showFilter = ref(false)
+const filterJenis = ref('')
 
+const estimasiList  = ref([])
 const hasilEstimasi = ref({ minimum: 0, maksimum: 0, rekomendasi: 0 })
 
+const avatarImg = ref(null)
+const avatarFallback = ref(null)
+
+const onAvatarError = async () => {
+  await nextTick()
+  if (avatarImg.value) avatarImg.value.style.display = 'none'
+  if (avatarFallback.value) avatarFallback.value.style.display = 'flex'
+}
+
 const emptyForm = () => ({
-  namaProyek: '', luasRuangan: '', jenisProyek: '',
-  tingkatKerumitan: '', durasiPengerjaan: '', lokasiProyek: '',
-  konsepDesain: '', materialKhusus: '', kebutuhanTambahan: '',
+  nama_perusahaan: '',
+  luas_area: '',
+  jenis_ruangan: [],
+  jenis_pekerjaan: '',
+  tingkat_kerumitan: '',
+  durasi_pengerjaan: '', //
+  lokasi_proyek: '',
+  spesifikasi_design: '',
+  material_khusus: '',
+  kebutuhan_tambahan: '',
 })
+const daftarItemOptions = [
+  //  Rumah
+  "Living Room", "Master Room", "Bed Room", "Kitchen",
+  "Dining Room", "Bath Room / Toilet", "Service Area",
+  "Workspace", "Indoor Area", "Outdoor Area",
+  "Backyard Garden", "Side Terrace",
+
+  // Kantor
+  "Lobby", "Director Room", "Manager Room", "Staff Room",
+  "Office Room", "Meeting Room", "Waiting Room",
+  "Consultation Room", "Treatment Room", "Training Room",
+  "Cashier", "Canteen Area", "Mushalla",
+
+  //  Bisnis
+  "Pet Shop", "Pet Hotel", "Grooming Room", "Pet Clinic",
+
+  //  Khusus
+  "Understair Cabinet", "Kitchen Area", "Kitchen Set", "Kontainer Mart",
+
+  //  Furniture
+  "Bar Table", "Coffee Table", "Wooden Bench",
+  "Wall Panel", "Pendant Lamp", "Backdrop Logo"
+]
 
 const form = ref(emptyForm())
 
 // ─────────────────────────────────────────────
-// DUMMY DATA 
+// LOAD DATA
 // ─────────────────────────────────────────────
-const estimasiList = ref([
-  { id: 1,  namaProyek: 'ION SCAN 500DT', jenisProyek: 'Alat Deteksi',     luasRuangan: 'Ion scan 500dt.pdf', biayaFile: 'Ion scan 500dt.pdf', tanggal: '2015-05-27', tingkatKerumitan: 'Sedang', durasiPengerjaan: 10, lokasiProyek: 'Jakarta', konsepDesain: 'Modern', materialKhusus: '', kebutuhanTambahan: '' },
-  { id: 2,  namaProyek: 'ION SCAN 500DT', jenisProyek: 'Alat Deteksi',     luasRuangan: 'Ion scan 500dt.pdf', biayaFile: 'Ion scan 500dt.pdf', tanggal: '2012-05-19', tingkatKerumitan: 'Mudah',  durasiPengerjaan: 7,  lokasiProyek: 'Bogor',   konsepDesain: 'Japandi', materialKhusus: 'Kayu Jati', kebutuhanTambahan: '' },
-  { id: 3,  namaProyek: 'RIGAKU',          jenisProyek: 'Alat Identifikasi',luasRuangan: 'Rigaku.pdf',         biayaFile: 'Rigaku.pdf',         tanggal: '2016-03-04', tingkatKerumitan: 'Sulit',  durasiPengerjaan: 14, lokasiProyek: 'Surabaya',konsepDesain: 'Industrial', materialKhusus: 'Baja', kebutuhanTambahan: '' },
-  { id: 12, namaProyek: 'RIGAKU',          jenisProyek: 'Alat Identifikasi',luasRuangan: 'Rigaku.pdf',         biayaFile: 'Rigaku.pdf',         tanggal: '2013-07-27', tingkatKerumitan: 'Sedang', durasiPengerjaan: 10, lokasiProyek: 'Bandung', konsepDesain: 'Minimalis', materialKhusus: '', kebutuhanTambahan: '' },
-])
+const loading = ref(false)
+const apiError = ref('')
 
-// ─────────────────────────────────────────────
-// COMPUTED
-// ─────────────────────────────────────────────
-const filteredList = computed(() => {
-  let list = [...estimasiList.value]
-  if (searchQuery.value) {
-    const q = searchQuery.value.toLowerCase()
-    list = list.filter(p =>
-      p.namaProyek.toLowerCase().includes(q) ||
-      p.jenisProyek.toLowerCase().includes(q)
-    )
+const fetchEstimasiList = async () => {
+  loading.value = true
+  apiError.value = ''
+  try {
+    const res = await fetch(`${API_BASE_URL}/admin/estimasi`)
+    if (!res.ok) {
+      const errText = await res.text()
+      throw new Error(errText || `HTTP ${res.status}`)
+    }
+    estimasiList.value = await res.json()
+  } catch (err) {
+    apiError.value = err.message
+    console.error('Gagal fetch:', err)
+  } finally {
+    loading.value = false
   }
-  list.sort((a, b) => {
-    if (sortBy.value === 'date_desc') return new Date(b.tanggal) - new Date(a.tanggal)
-    if (sortBy.value === 'date_asc')  return new Date(a.tanggal) - new Date(b.tanggal)
-    if (sortBy.value === 'nama_asc')  return a.namaProyek.localeCompare(b.namaProyek)
-    return 0
-  })
-  return list
-})
-
-const totalPages = computed(() => Math.max(1, Math.ceil(filteredList.value.length / perPage.value)))
-
-// ─────────────────────────────────────────────
-// METHODS
-// ─────────────────────────────────────────────
-const openForm = () => {
-  form.value = emptyForm()
-  activeItem.value = null
-  currentView.value = 'form'
 }
 
-const resetForm = () => { form.value = emptyForm() }
+onMounted(fetchEstimasiList)
 
-/**
- * prosesEstimasi — kirim ke backend Golang
- */
+// ─────────────────────────────────────────────
+// HELPER
+// ─────────────────────────────────────────────
+const badgeClass = (jenis) => {
+  if (!jenis) return ''
+
+  const val = jenis.toLowerCase()
+
+  if (val.includes('custom')) return 'badge--custom'
+  if (val.includes('desain')) return 'badge--desain'
+  if (val.includes('renovasi')) return 'badge--renovasi'
+  if (val.includes('deteksi')) return 'badge--deteksi'
+  if (val.includes('identifikasi')) return 'badge--identifikasi'
+
+  return ''
+}
+
+const formatRupiah = (angka) => {
+  if (!angka) return 'Rp 0'
+
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0
+  }).format(angka)
+}
+
+const formatTanggal = (tanggal) => {
+  if (!tanggal) return '-'
+
+  const date = new Date(tanggal)
+
+  return date.toLocaleDateString('id-ID', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  })
+}
+
+// ─────────────────────────────────────────────
+// PROSES ESTIMASI
+// ─────────────────────────────────────────────
 const prosesEstimasi = async () => {
-  if (!form.value.namaProyek || !form.value.jenisProyek) return
+  if (!form.value.nama_perusahaan) return
 
   isLoading.value = true
 
   try {
-    // ── DUMMY LOGIC  ──────────────────────
-    await new Promise(r => setTimeout(r, 800)) // simulasi loading
-    const luas = parseFloat(form.value.luasRuangan) || 10
-    const durasi = parseFloat(form.value.durasiPengerjaan) || 10
-    const base = luas * durasi * 500000
-    hasilEstimasi.value = {
-      minimum:     Math.round(base * 0.5),
-      maksimum:    Math.round(base * 2.5),
-      rekomendasi: Math.round(base),
+const payload = {
+      nama_perusahaan: form.value.nama_perusahaan,
+      luas_area: Number(form.value.luas_area),
+      jenis_ruangan: form.value.jenis_ruangan,
+      jenis_pekerjaan: form.value.jenis_pekerjaan,
+      tingkat_kerumitan: form.value.tingkat_kerumitan,
+      durasi_pengerjaan: Number(form.value.durasi_pengerjaan),
+      lokasi_proyek: form.value.lokasi_proyek,
+      spesifikasi_design: form.value.spesifikasi_design,
+      material_khusus: form.value.material_khusus || null,
+      kebutuhan_tambahan: form.value.kebutuhan_tambahan,
     }
-    // ── END DUMMY ──────────────────────────────────────────────────
 
-    // ── API CALL ─────────────────────
-    // const payload = {
-    //   nama_proyek:        form.value.namaProyek,
-    //   luas_ruangan:       form.value.luasRuangan,
-    //   jenis_proyek:       form.value.jenisProyek,
-    //   tingkat_kerumitan:  form.value.tingkatKerumitan,
-    //   durasi_pengerjaan:  Number(form.value.durasiPengerjaan),
-    //   lokasi_proyek:      form.value.lokasiProyek,
-    //   konsep_desain:      form.value.konsepDesain,
-    //   material_khusus:    form.value.materialKhusus,
-    //   kebutuhan_tambahan: form.value.kebutuhanTambahan,
-    // }
-    // const res  = await postEstimasi(payload)
-    // hasilEstimasi.value = {
-    //   minimum:     res.minimum,
-    //   maksimum:    res.maksimum,
-    //   rekomendasi: res.rekomendasi,
-    // }
-    // ── END API CALL ───────────────────────────────────────────────
+    console.log("PAYLOAD FIX:", payload)
+
+    const res = await fetch(`http://127.0.0.1:5000/predict`, { 
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    })
+
+    const text = await res.text()
+    if (!res.ok) throw new Error(text)
+
+    const data = JSON.parse(text)
+    const estimasi = data.estimasi_harga || 0
+
+    hasilEstimasi.value = {
+      minimum: estimasi * 0.8,
+      maksimum: estimasi * 1.2,
+      rekomendasi: estimasi
+    }
 
     currentView.value = 'hasil'
+
   } catch (err) {
     console.error('Estimasi error:', err)
   } finally {
     isLoading.value = false
   }
 }
-
-/**
- * simpanData — simpan hasil estimasi ke list
- */
+// ─────────────────────────────────────────────
+// SIMPAN DATA
+// ─────────────────────────────────────────────
 const simpanData = async () => {
-  // ── DUMMY ──────────────────────────────────────────────────────
-  const newItem = {
-    id: Date.now(),
-    namaProyek:        form.value.namaProyek,
-    jenisProyek:       form.value.jenisProyek,
-    luasRuangan:       form.value.luasRuangan,
-    biayaFile:         `${form.value.namaProyek}.pdf`,
-    tanggal:           new Date().toISOString().split('T')[0],
-    tingkatKerumitan:  form.value.tingkatKerumitan,
-    durasiPengerjaan:  form.value.durasiPengerjaan,
-    lokasiProyek:      form.value.lokasiProyek,
-    konsepDesain:      form.value.konsepDesain,
-    materialKhusus:    form.value.materialKhusus,
-    kebutuhanTambahan: form.value.kebutuhanTambahan,
+  try {
+    const payload = {
+      nama_perusahaan: form.value.nama_perusahaan,
+      luas_area: Number(form.value.luas_area),
+      jenis_ruangan: form.value.jenis_ruangan,
+      jenis_pekerjaan: form.value.jenis_pekerjaan,
+      tingkat_kerumitan: form.value.tingkat_kerumitan,
+      durasi_pengerjaan: Number(form.value.durasi_pengerjaan),
+      lokasi_proyek: form.value.lokasi_proyek,
+      spesifikasi_design: form.value.spesifikasi_design,
+      material_khusus: form.value.material_khusus,
+      kebutuhan_tambahan: form.value.kebutuhan_tambahan,
+      harga_proyek: hasilEstimasi.value.rekomendasi
+    }
+
+    const res = await fetch(`${API_BASE_URL}/admin/estimasi`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    })
+
+    const text = await res.text()
+    if (!res.ok) throw new Error(text)
+
+    await fetchEstimasiList()
+
+    currentView.value = 'list'
+    form.value = emptyForm()
+
+  } catch (err) {
+    console.error('Gagal simpan:', err)
   }
-  estimasiList.value.push(newItem)
-  // ── END DUMMY ──────────────────────────────────────────────────
+}
 
-  // ── API CALL ─────────────────────
-  // await postEstimasi({ ...payload, hasil: hasilEstimasi.value })
-  // await fetchEstimasiList().then(data => { estimasiList.value = data })
-  // ── END API CALL ───────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// DELETE
+// ─────────────────────────────────────────────
+const deleteItem = async (id) => {
+  try {
+    const res = await fetch(`${API_BASE_URL}/admin/estimasi/${id}`, {
+      method: "DELETE"
+    })
 
-  currentView.value = 'list'
+    const text = await res.text()
+    if (!res.ok) throw new Error(text)
+
+    await fetchEstimasiList()
+
+  } catch (err) {
+    console.error('Delete error:', err)
+  }
+}
+
+// ─────────────────────────────────────────────
+// VIEW
+// ─────────────────────────────────────────────
+const openForm = () => {
   form.value = emptyForm()
-  activeItem.value = null
-}
-
-const viewHasil = (item) => {
-  activeItem.value = item
-  // ── DUMMY hasil ─────────────────────────────────────────────────
-  hasilEstimasi.value = { minimum: 50000, maksimum: 250000, rekomendasi: 100000 }
-  // ── API  ──────────────────────────
-  // getEstimasiById(item.id).then(res => { hasilEstimasi.value = res.hasil })
-  currentView.value = 'hasil'
-}
-
-/**
- * deleteItem — hapus dari list
- */
-const deleteItem = (id) => {
-  estimasiList.value = estimasiList.value.filter(p => p.id !== id)
-  // ── API  ──────────────────────────
-  // deleteEstimasi(id)
+  currentView.value = 'form'
 }
 
 // ─────────────────────────────────────────────
-// HELPERS
+// COMPUTED (SEARCH + FILTER + SORT)
 // ─────────────────────────────────────────────
-const badgeClass = (j) => {
-  if (j === 'Alat Deteksi')      return 'badge--deteksi'
-  if (j === 'Alat Identifikasi') return 'badge--identifikasi'
-  if (j === 'Renovasi')          return 'badge--renovasi'
-  if (j === 'Desain Interior')   return 'badge--desain'
-  if (j === 'Custom Furniture')  return 'badge--custom'
-  return ''
-}
+const filteredList = computed(() => {
+  let list = [...estimasiList.value]
 
-const formatRupiah = (v) => {
-  if (!v && v !== 0) return '–'
-  return 'Rs. ' + Number(v).toLocaleString('en-US', { minimumFractionDigits: 2 })
-}
+// RESET PAGE kalau search / filter berubah
+// watch([searchQuery, filterJenis], () => {
+//   currentPage.value = 1
+// })
 
-const formatTanggal = (v) => {
-  if (!v) return '–'
-  const d = new Date(v)
-  return `${d.getMonth()+1}/${d.getDate()}/${String(d.getFullYear()).slice(2)}`
-}
+  // 🔍 SEARCH
+  if (searchQuery.value) {
+    const q = searchQuery.value.toLowerCase()
+    list = list.filter(p =>
+      (p.nama_perusahaan || '').toLowerCase().includes(q)
+    )
+  }
 
-const onAvatarError = () => {
-  if (avatarImg.value) avatarImg.value.style.display = 'none'
-  if (avatarFallback.value) avatarFallback.value.style.display = 'flex'
-}
+  // FILTER JENIS
+  if (filterJenis.value) {
+    list = list.filter(p =>
+      p.jenis_proyek === filterJenis.value
+    )
+  }
+
+  // SORTING
+  if (sortBy.value === 'date_desc') {
+    list.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+  }
+
+  if (sortBy.value === 'date_asc') {
+    list.sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+  }
+
+  if (sortBy.value === 'nama_asc') {
+    list.sort((a, b) =>
+      (a.nama_perusahaan || '').localeCompare(b.nama_perusahaan || '')
+    )
+  }
+
+  return list
+})
+
+  // PAGINATION SLICE DATA
+const paginatedList = computed(() => {
+  const start = (currentPage.value - 1) * perPage.value
+  const end = start + perPage.value
+  return filteredList.value.slice(start, end)
+})
+
+const totalPages = computed(() => {
+  return Math.ceil(filteredList.value.length / perPage.value) || 1
+})
+
+watch([searchQuery, filterJenis], () => {
+  currentPage.value = 1
+})
+
 </script>
 
 <style scoped>
@@ -881,6 +1143,58 @@ const onAvatarError = () => {
 }
 .btn-simpan-data:hover { background: #F4F5F7; border-color: #999; }
 
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  font-size: 12px;
+}
+
+.multiselect {
+  position: relative;
+}
+
+.multiselect__trigger {
+  border: 1.5px solid #E8E8E8;
+  border-radius: 8px;
+  padding: 11px 14px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  background: #fff;
+}
+
+.multiselect__placeholder {
+  color: #aaa;
+}
+
+.multiselect__value {
+  color: #333;
+}
+
+.multiselect__dropdown {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 100%;
+  max-height: 220px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1.5px solid #E8E8E8;
+  border-radius: 8px;
+  z-index: 10;
+  padding: 10px;
+}
+
+.multiselect__option {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  padding: 6px;
+  cursor: pointer;
+}
 /* ── Spinner ── */
 .spinner {
   display: inline-block; width: 14px; height: 14px;

@@ -51,7 +51,7 @@
         >
           <!-- Gambar + overlay hover -->
           <div class="card-img-wrap">
-            <img :src="item.image" :alt="item.judul_proyek" class="card-img" />
+            <img :src="getImageUrl(item.gambar)" :alt="item.judul_proyek" class="card-img" />
 
             <div class="card-overlay">
               <button class="overlay-cart">Add to cart</button>
@@ -414,6 +414,11 @@ const removeImage = () => {
   imagePreview.value = ''
   formData.gambar = null
   if (fileInput.value) fileInput.value.value = ''
+}
+
+const getImageUrl = (gambar) => {
+  if (!gambar) return ''
+  return `http://localhost:8081/uploads/${gambar}`
 }
 
 // ================= LOAD AWAL =================
