@@ -297,26 +297,37 @@
             </div>
           </div>
 
-          <div class="field">
-            <label class="field__label">Material Khusus</label>
-            <div class="field__select-wrap">
-              <select v-model="form.material_khusus">
-                <option value="">Opsional</option>
-                <option>Kayu Jati</option>
-                <option>Kayu Pinus</option>
-                <option>Baja</option>
-                <option>Marmer</option>
-              </select>
+        <div class="field">
+          <label class="field__label">Material Khusus (Opsional)</label>
 
-              <input
-                v-if="form.material_khusus === ''"
-                v-model="form.material_khusus"
-                type="text"
-                placeholder="Custom material"
-              />
-              <svg class="field__select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
+          <div class="field__select-wrap">
+            <select v-model="form.material_khusus" class="field__select" required>
+              <option value="" disabled hidden>Pilih material</option>
+              <option value="Kayu Jati">Kayu Jati</option>
+              <option value="Kayu Mahoni">Kayu Mahoni</option>
+              <option value="Kayu Jati Muda">Kayu Jati Muda</option>
+              <option value="Multiplek">Multiplek</option>
+              <option value="MDF">MDF</option>
+              <option value="Besi">Besi</option>
+              <option value="Kaca">Kaca</option>
+              <option value="Marmer">Marmer</option>
+              <option value="custom">Lainnya</option>
+            </select>
+
+            <svg class="field__select-arrow" width="16" height="16" viewBox="0 0 24 24">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
           </div>
+
+          <!-- input custom -->
+          <input
+            v-if="form.material_khusus === 'custom'"
+            v-model="form.material_custom"
+            class="field__input"
+            type="text"
+            placeholder="Masukkan material custom"
+          />
+        </div>
 
           <div class="field">
             <label class="field__label">Kebutuhan Tambahan</label>
@@ -1142,6 +1153,82 @@ watch([searchQuery, filterJenis], () => {
   transition: background 0.2s, border-color 0.2s;
 }
 .btn-simpan-data:hover { background: #F4F5F7; border-color: #999; }
+
+/* khusus field select + input kombinasi */
+/* ── Select Wrapper (konsisten dengan field lain) ── */
+.field__select-wrap {
+  position: relative;
+  width: 100%;
+}
+
+/* Select */
+.field__select {
+  width: 100%;
+  padding: 11px 44px 11px 14px;
+  border: 1.5px solid #E8E8E8;
+  border-radius: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  color: #2C2C2C;
+  background: #FFFFFF;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* Placeholder select */
+.field__select:invalid {
+  color: #CCCCCC;
+}
+
+/* Focus effect (biar sama kayak input) */
+.field__select:focus {
+  border-color: #1B7A6E;
+  box-shadow: 0 0 0 3px rgba(27,122,110,0.08);
+}
+
+/* Arrow */
+.field__select-arrow {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  pointer-events: none;
+}
+
+/* Input custom material */
+.field__input {
+  margin-top: 10px;
+}
+
+/* biar arrow tetap di select */
+.field__select-wrap .field__select {
+  position: relative;
+  z-index: 1;
+}
+
+/* input custom tampil rapi */
+.field__select-wrap .field__input {
+  margin-top: 2px;
+}
+
+.field__select {
+  all: unset;
+  width: 100%;
+  padding: 11px 44px 11px 14px;
+  border: 1.5px solid #E8E8E8;
+  border-radius: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  color: #2C2C2C;
+  background: #FFFFFF;
+  cursor: pointer;
+  appearance: none;
+  box-sizing: border-box;
+}
 
 .checkbox-grid {
   display: grid;

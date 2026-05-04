@@ -42,13 +42,34 @@ func EstimasiOnly(c *gin.Context) {
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != http.StatusOK {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "ML service error",
+		})
+		return
+	}
+
 	// 3. decode response ML
 	var result map[string]interface{}
-	json.NewDecoder(resp.Body).Decode(&result)
 
-	// 4. return ONLY hasil (NO DB)
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Gagal membaca response dari ML",
+		})
+		return
+	}
+	// 4. ambil estimasi
+	estimasi, ok := result["estimasi"]
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Format response ML tidak sesuai",
+		})
+		return
+	}
+
+	// 5. return ke frontend
 	c.JSON(http.StatusOK, gin.H{
 		"message":        "Estimasi berhasil",
-		"estimasi_harga": result["estimasi"],
+		"estimasi_harga": estimasi,
 	})
 }
