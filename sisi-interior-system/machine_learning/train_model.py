@@ -29,6 +29,18 @@ df = pd.read_sql(query, conn)
 
 df = df.dropna()
 
+# mapping string --> angka
+df['tingkat_kerumitan'] = df['tingkat_kerumitan'].str.strip().map({
+    'Rendah': 1,
+    'Sedang': 2,
+    'Tinggi': 3
+})
+
+# memastikan numeric
+df['durasi_pengerjaan'] = pd.to_numeric(df['durasi_pengerjaan'], errors='coerce')
+
+df = df.dropna()
+
 # encoding
 df = pd.get_dummies(df, columns=[
     'jenis_ruangan',
@@ -54,3 +66,4 @@ pickle.dump({
 }, open("model_estimasi.pkl","wb"))
 
 print("Model siap digunakan")
+

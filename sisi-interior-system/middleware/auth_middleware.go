@@ -7,13 +7,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AuthMiddleware() gin.HandlerFunc {
+func AuthMiddleware(role string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		//ambil header Authorization
 		authHeader := c.GetHeader("Authorization")
 
-		//kalau tidak ada token
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": "Token tidak ditemukan",
@@ -22,7 +20,6 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		//format harus: Bearer token
 		tokenParts := strings.Split(authHeader, " ")
 
 		if len(tokenParts) != 2 {
@@ -35,7 +32,6 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		token := tokenParts[1]
 
-		//kalau token kosong
 		if token == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": "Token invalid",
@@ -44,7 +40,9 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		//lanjut ke controller
+		// OPTIONAL: simpan role ke context (kalau mau dipakai nanti)
+		c.Set("role", role)
+
 		c.Next()
 	}
 }

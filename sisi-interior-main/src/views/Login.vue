@@ -100,6 +100,7 @@ import { ref, reactive } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
 import { login } from '@/services/auth'
 
+
 const router       = useRouter()
 const isLoading    = ref(false)
 const showPassword = ref(false)
@@ -159,22 +160,32 @@ const handleLogin = async () => {
     console.log('Response:', res.data)
 
 
-    // pakai manual dulu (biar pasti lolos guard)
+ const user = res.data?.user
+
+    if (!user) {
+      throw new Error("User tidak ditemukan di response")
+    }
+
+    // simpan session
     localStorage.setItem('token', '123')
-    localStorage.setItem('role', 'admin')
+    localStorage.setItem('role', user.role)
+    localStorage.setItem('username', user.username)
 
     console.log("TOKEN SET")
-    console.log("ROLE SET")
+    console.log("ROLE:", user.role)
+    console.log("FULL RESPONSE:", JSON.stringify(res.data, null, 2))
 
-    isLoading.value = false
-
-    console.log("REDIRECTING...")
-
-    router.push('/admin/dashboard')
+    // redirect berdasarkan role
+    if (user.role === 'admin') {
+      router.push('/admin/dashboard')
+    } else {
+      router.push('/')
+    }
 
   } catch (error) {
     console.error("ERROR LOGIN:", error)
     errorMsg.value = error.response?.data?.error || 'Login gagal'
+  } finally {
     isLoading.value = false
   }
 }

@@ -1,7 +1,12 @@
 package controllers
 
 import (
+	"bytes"
+	"encoding/json"
+	"io"
 	"net/http"
+
+	//"sisi-interior"
 	"sisi-interior-system/config"
 	"sisi-interior-system/models"
 	"strings"
@@ -140,7 +145,48 @@ func GetEstimasi(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, data)
+	var hasil []gin.H
+
+	for _, item := range data {
+
+		payload := map[string]interface{}{
+			"luas_area":          item.LuasArea,
+			"tingkat_kerumitan":  item.TingkatKerumitan,
+			"durasi_pengerjaan":  item.DurasiPengerjaan,
+			"jenis_ruangan":      item.JenisRuangan,
+			"jenis_pekerjaan":    item.JenisPekerjaan,
+			"spesifikasi_design": item.SpesifikasiDesign,
+		}
+
+		jsonData, _ := json.Marshal(payload)
+
+		resp, err := http.Post(
+			"http://127.0.0.1:5000/predict",
+			"application/json",
+			bytes.NewBuffer(jsonData),
+		)
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		defer resp.Body.Close()
+
+		body, _ := io.ReadAll(resp.Body)
+
+		var mlResult map[string]interface{}
+		json.Unmarshal(body, &mlResult)
+
+		hasil = append(hasil, gin.H{
+			"data":     item,
+			"estimasi": mlResult["estimasi"],
+		})
+	}
+
+	c.JSON(http.StatusOK, hasil)
 }
 
 // ============================

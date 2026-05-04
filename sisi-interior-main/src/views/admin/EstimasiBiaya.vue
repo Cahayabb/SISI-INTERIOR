@@ -327,7 +327,7 @@
             <button class="btn-reset" @click="resetForm">Reset</button>
             <button class="btn-simpan" @click="prosesEstimasi" :disabled="isLoading">
               <span v-if="isLoading" class="spinner"></span>
-              <span v-else>Simpan</span>
+              <span v-else>Proses</span>
             </button>
           </div>
         </div>
@@ -462,7 +462,13 @@
               <span class="hasil-result-value hasil-result-value--gold">{{ formatRupiah(hasilEstimasi?.rekomendasi || 0) }}</span>
             </div>
           </div>
-          <button class="btn-simpan-data" @click="simpanData">Simpan Data</button>
+          <button 
+            class="btn-simpan-data" 
+            @click="simpanData"
+            :disabled="!hasilEstimasi"
+          >
+            Simpan Data
+          </button>
         </div>
 
       </div>
@@ -501,6 +507,8 @@ onBeforeUnmount(() => {
 // API CONFIG 
 // ─────────────────────────────────────────────
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081/api'
+const API_BASE_URL_ML = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/'
+
 
 // ─────────────────────────────────────────────
 // STATE
@@ -654,7 +662,7 @@ const payload = {
 
     console.log("PAYLOAD FIX:", payload)
 
-    const res = await fetch(`${API_BASE_URL}/admin/estimasi`, {
+    const res = await fetch(`http://127.0.0.1:5000/predict`, { 
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)

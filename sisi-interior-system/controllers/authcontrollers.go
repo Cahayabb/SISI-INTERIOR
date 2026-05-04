@@ -9,39 +9,64 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func LoginAdmin(c *gin.Context) {
+// LOGIN GABUNGAN ADMIN + USER
+func Login(c *gin.Context) {
 	var loginData struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
 	}
 
-	var admin models.Admin
-
-	// ambil data dari frontend
+	// bind request
 	if err := c.ShouldBindJSON(&loginData); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User tidak ditemukan"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Input tidak valid"})
 		return
 	}
 
-	// ambil data dari DB pakai GORM
-	if err := config.DB.Where("username = ?", loginData.Username).First(&admin).Error; err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User tidak ditemukan"})
-		return
+	// =========================
+	// 1. CEK ADMIN
+	// =========================
+	var admin models.Admin
+	errAdmin := config.DB.Where("username = ?", loginData.Username).First(&admin).Error
+
+	if errAdmin == nil {
+		// cek password admin
+		err := bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte(loginData.Password))
+		if err == nil {
+			c.JSON(http.StatusOK, gin.H{
+				"message": "Login berhasil",
+				"user": gin.H{
+					"username": admin.Username,
+					"role":     "admin",
+				},
+			})
+			return
+		}
 	}
 
-	// cek password
-	err := bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte((loginData).Password))
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Password salah"})
-		return
+	// =========================
+	// 2. CEK USER
+	// =========================
+	var user models.User
+	errUser := config.DB.Where("username = ?", loginData.Username).First(&user).Error
+
+	if errUser == nil {
+		err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginData.Password))
+		if err == nil {
+			c.JSON(http.StatusOK, gin.H{
+				"message": "Login berhasil",
+				"user": gin.H{
+					"username": user.Username,
+					"role":     "users",
+				},
+			})
+			return
+		}
 	}
 
-	// sukses
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Login berhasil",
-		"user": gin.H{
-			"username": admin.Username,
-			"role":     "admin",
-		},
+	// =========================
+	// 3. GAGAL LOGIN
+	// =========================
+	c.JSON(http.StatusUnauthorized, gin.H{
+		"error": "Username atau password salah",
 	})
 }
