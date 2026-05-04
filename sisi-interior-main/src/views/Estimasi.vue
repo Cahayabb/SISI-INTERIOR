@@ -23,18 +23,18 @@
         <div class="estimasi-form">
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label">Nama Proyek</label>
+              <label class="form-label">Nama Perusahaan</label>
               <input
-                v-model="form.namaProyek"
+                v-model="form.nama_perusahaan"
                 type="text"
                 class="form-input"
                 placeholder=""
               />
             </div>
             <div class="form-group">
-              <label class="form-label">Luas Ruangan (m²)</label>
+              <label class="form-label">Luas Area</label>
               <input
-                v-model="form.luasRuangan"
+                v-model="form.luas_area"
                 type="number"
                 class="form-input"
                 placeholder=""
@@ -44,26 +44,91 @@
           </div>
 
           <!-- Jenis Proyek -->
-          <div class="form-group">
-            <label class="form-label">Jenis Proyek</label>
-            <div class="form-select-wrap">
-              <select v-model="form.jenisProyek" class="form-select">
-                <option value="">Pilih Jenis Proyek</option>
-                <option value="Custom Furniture">Custom Furniture</option>
-                <option value="Desain Interior">Desain Interior</option>
-                <option value="Kontraktor">Kontraktor</option>
-                <option value="Renovasi">Renovasi</option>
-                <option value="Bangunan Baru">Bangunan Baru</option>
+          <div class="field">
+            <label class="field__label">Jenis Proyek</label>
+            <div class="field__select-wrap">
+              <select v-model="form.jenis_proyek" class="field__select">
+                <option value="" disabled>Pilih jenis proyek</option>
+                <option>Rumah</option>
+                <option>Apartment</option>
+                <option>Cafe</option>
+                <option>Kantor</option>
+                <option>Clinic</option>
+                <option>Tenant</option>
+                <option>Kost</option>
+                <option>SPA</option>
+                <option value="lainnya">Lainnya</option>
               </select>
-              <svg class="form-select-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+
+              <input
+                v-if="form.jenis_proyek === 'lainnya'"
+                v-model="form.jenis_proyek_lainnya"
+                type="text"
+                class="field__input"
+                placeholder="Masukkan jenis proyek lainnya"
+              />
+              <svg class="field__select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
           </div>
 
+          <div class="field">
+            <label class="field__label">Jenis Pekerjaan</label>
+            <select v-model="form.jenis_pekerjaan" class="field__select">
+              <option value="" disabled>Pilih jenis pekerjaan</option>
+              <option>Design</option>
+              <option>Build / Fit Out</option>
+              <option>Furniture</option>
+              <option>MEP (Mechanical Electrical Plumbing)</option>
+              <option>Maintenance</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="field__label">Jenis Ruangan</label>
+
+            <div class="multiselect" ref="multiRef">
+              
+              <!-- Trigger -->
+              <div class="multiselect__trigger" @click.stop="toggleMultiSelect">
+                <span v-if="form.jenis_ruangan.length === 0" class="multiselect__placeholder">
+                  Silahkan pilih beberapa jenis
+                </span>
+
+                <span v-else class="multiselect__value">
+                  {{ form.jenis_ruangan.join(', ') }}
+                </span>
+
+                <svg class="multiselect__arrow" width="16" height="16"
+                  :style="{ transform: multiSelectOpen ? 'rotate(180deg)' : 'rotate(0deg)' }">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </div>
+
+              <!-- Dropdown -->
+              <div v-if="multiSelectOpen" class="multiselect__dropdown">
+                <label 
+                  v-for="item in daftarItemOptions" 
+                  :key="item" 
+                  class="multiselect__option"
+                >
+                  <input
+                    type="checkbox"
+                    :value="item"
+                    v-model="form.jenis_ruangan"
+                  />
+                  <span>{{ item }}</span>
+                </label>
+              </div>
+
+            </div>
+          </div>
+
+          
           <!-- Tingkat Kerumitan -->
           <div class="form-group">
             <label class="form-label">Tingkat Kerumitan</label>
             <div class="form-select-wrap">
-              <select v-model="form.tingkatKerumitan" class="form-select">
+              <select v-model="form.tingkat_kerumitan"class="form-select">
                 <option value="">Pilih Tingkat Kerumitan</option>
                 <option value="Mudah">Mudah</option>
                 <option value="Sedang">Sedang</option>
@@ -78,7 +143,7 @@
           <div class="form-group">
             <label class="form-label">Durasi Pengerjaan (hari)</label>
             <input
-              v-model="form.durasi"
+              v-model="form.durasi_pengerjaan"
               type="number"
               class="form-input"
               placeholder=""
@@ -90,37 +155,38 @@
           <div class="form-group">
             <label class="form-label">Lokasi Proyek</label>
             <input
-              v-model="form.lokasi"
+              v-model="form.lokasi_proyek"
               type="text"
               class="form-input"
               placeholder=""
             />
           </div>
 
-          <!-- Konsep/Gaya Desain -->
-          <div class="form-group">
-            <label class="form-label">Konsep/Gaya Desain</label>
-            <div class="form-select-wrap">
-              <select v-model="form.konsep" class="form-select">
-                <option value="">Pilih Konsep</option>
-                <option value="Japandi">Japandi</option>
-                <option value="Minimalis">Minimalis</option>
-                <option value="Modern">Modern</option>
-                <option value="Klasik">Klasik</option>
-                <option value="Industrial">Industrial</option>
-                <option value="Skandinavia">Skandinavia</option>
-                <option value="Bohemian">Bohemian</option>
-                <option value="Tropis">Tropis</option>
+          <div class="field">
+            <label class="field__label">Spesifikasi Design</label>
+            <div class="field__select-wrap">
+              <select v-model="form.spesifikasi_design" class="field__select">
+                <option value="" disabled>Pilih spesifikasi design</option>
+                <option>Japandi</option>
+                <option>Industrial</option>
+                <option>Scandinavian</option>
+                <option>Modern</option>
+                <option>Modern Minimalist</option>
+                <option>Ekletik / Colorful</option>
+                <option>Bohemian</option>
+                <option>Klasik / Victorian</option>
+                <option>Rustic</option>
+                <option>Minimalis</option>
               </select>
-              <svg class="form-select-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              <svg class="field__select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </div>
           </div>
 
           <!-- Material Khusus -->
-          <div class="form-group">
+          <div class="field">
             <label class="form-label">Material Khusus</label>
             <div class="form-select-wrap">
-              <select v-model="form.material" class="form-select">
+              <select v-model="form.material_khusus" class="form-select">
                 <option value="">Pilih Material</option>
                 <option value="Kayu Jati">Kayu Jati</option>
                 <option value="Kayu Mahoni">Kayu Mahoni</option>
@@ -139,7 +205,7 @@
           <div class="form-group">
             <label class="form-label">Kebutuhan Tambahan</label>
             <textarea
-              v-model="form.kebutuhanTambahan"
+              v-model="form.kebutuhan_tambahan"
               class="form-textarea"
               placeholder="Additional information"
               rows="4"
@@ -148,10 +214,22 @@
 
           <!-- Tombol Reset + Simpan -->
           <div class="form-actions">
-            <button class="btn-reset" @click="handleReset">Reset</button>
-            <button class="btn-simpan" @click="handleSimpan" :disabled="isSaving">
-              <span v-if="isSaving" class="btn-spinner"></span>
-              <span v-else>Simpan</span>
+            <button
+              type="button"
+              class="btn-reset"
+              @click="handleReset"
+            >
+              Reset
+            </button>
+
+            <button
+              type="button"
+              class="btn-simpan"
+              @click="handleEstimasi"
+              :disabled="isEstimating"
+            >
+              <span v-if="isEstimating" class="btn-spinner"></span>
+              <span v-else>Proses</span>
             </button>
           </div>
 
@@ -165,10 +243,10 @@
 
             <div class="ringkasan-card__rows">
               <div class="ringkasan-row">
-                <span class="ringkasan-row__label">Luas Ruangan (m²)</span>
+                <span class="ringkasan-row__label">Luas Area </span>
                 <span class="ringkasan-row__value">
-                  <template v-if="form.luasRuangan">
-                    {{ form.luasRuangan }} m² <span class="ringkasan-row__x">x</span> {{ form.luasRuangan }}m²
+                  <template v-if="form.luas_area">
+                    {{ form.luas_area}} m² <span class="ringkasan-row__x">x</span> {{ form.luas_area}}
                   </template>
                   <template v-else>—</template>
                 </span>
@@ -176,13 +254,13 @@
 
               <div class="ringkasan-row">
                 <span class="ringkasan-row__label">Kerumitan</span>
-                <span class="ringkasan-row__value">{{ form.tingkatKerumitan || '—' }}</span>
+                <span class="ringkasan-row__value">{{ form.tingkat_kerumitan || '—' }}</span>
               </div>
 
               <div class="ringkasan-row">
                 <span class="ringkasan-row__label">Durasi</span>
                 <span class="ringkasan-row__value">
-                  {{ form.durasi ? form.durasi + ' Hari' : '—' }}
+                  {{ form.durasi_pengerjaan ? form.durasi_pengerjaan + ' Hari' : '—' }}
                 </span>
               </div>
             </div>
@@ -224,27 +302,86 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive,onMounted, onBeforeUnmount } from 'vue'
 import { RouterLink } from 'vue-router'
+
+const multiSelectOpen = ref(false)
+const multiRef = ref(null)
+
+const toggleMultiSelect = () => {
+  multiSelectOpen.value = !multiSelectOpen.value
+}
+
+const daftarItemOptions = [
+  //  Rumah
+  "Living Room", "Master Room", "Bed Room", "Kitchen",
+  "Dining Room", "Bath Room / Toilet", "Service Area",
+  "Workspace", "Indoor Area", "Outdoor Area",
+  "Backyard Garden", "Side Terrace",
+
+  // Kantor
+  "Lobby", "Director Room", "Manager Room", "Staff Room",
+  "Office Room", "Meeting Room", "Waiting Room",
+  "Consultation Room", "Treatment Room", "Training Room",
+  "Cashier", "Canteen Area", "Mushalla",
+
+  //  Bisnis
+  "Pet Shop", "Pet Hotel", "Grooming Room", "Pet Clinic",
+
+  //  Khusus
+  "Understair Cabinet", "Kitchen Area", "Kitchen Set", "Kontainer Mart",
+
+  //  Furniture
+  "Bar Table", "Coffee Table", "Wooden Bench",
+  "Wall Panel", "Pendant Lamp", "Backdrop Logo"
+]
+
+const handleClickOutside = (event) => {
+  if (multiRef.value && !multiRef.value.contains(event.target)) {
+    multiSelectOpen.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 
 const isSaving    = ref(false)
 const isEstimating = ref(false)
 const estimasiResult = ref('')
 
 const form = reactive({
-  namaProyek:        '',
-  luasRuangan:       '',
-  jenisProyek:       '',
-  tingkatKerumitan:  '',
-  durasi:            '',
-  lokasi:            '',
-  konsep:            '',
-  material:          '',
-  kebutuhanTambahan: '',
+  nama_perusahaan: '',
+  luas_area: '',
+  jenis_proyek: '',
+  jenis_ruangan: [],
+
+  tingkat_kerumitan: '',
+  durasi_pengerjaan: '',
+
+  lokasi_proyek: '',
+  spesifikasi_design: '',
+  material_khusus: '',
+  kebutuhan_tambahan: '',
 })
 
 const handleReset = () => {
-  Object.keys(form).forEach(k => form[k] = '')
+  form.nama_perusahaan = ''
+  form.luas_area = ''
+  form.jenis_proyek = ''
+  form.jenis_pekerjaan = ''
+  form.jenis_ruangan = [] 
+  form.tingkat_kerumitan = ''
+  form.durasi_pengerjaan = ''
+  form.lokasi_proyek = ''
+  form.spesifikasi_design = ''
+  form.material_khusus = ''
+  form.kebutuhan_tambahan = ''
+
   estimasiResult.value = ''
 }
 
@@ -252,24 +389,30 @@ const handleSimpan = async () => {
   isSaving.value = true
   try {
     const token = localStorage.getItem('token')
-    const res = await fetch('http://localhost:8081/estimasi/simpan',{
+    const res = await fetch('http://localhost:8081/api/users/estimasi',{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({
-        nama_proyek:        form.namaProyek,
-        luas_ruangan:       Number(form.luasRuangan),
-        jenis_proyek:       form.jenisProyek,
-        tingkat_kerumitan:  form.tingkatKerumitan,
-        durasi:             Number(form.durasi),
-        lokasi:             form.lokasi,
-        konsep:             form.konsep,
-        material:           form.material,
-        kebutuhan_tambahan: form.kebutuhanTambahan,
-      }),
+    body: JSON.stringify({
+      nama_perusahaan: form.nama_perusahaan,
+      luas_area: Number(form.luas_area),
+
+      //  array → string (wajib disesuaikan ke backend ML)
+      jenis_ruangan: form.jenis_ruangan[0] || '',
+
+      jenis_proyek:form.jenis_proyek,
+      jenis_pekerjaan: form.jenis_pekerjaan,
+      tingkat_kerumitan: form.tingkat_kerumitan,
+      durasi_pengerjaan: Number(form.durasi_pengerjaan),
+      lokasi_proyek: form.lokasi_proyek,
+      spesifikasi_design: form.spesifikasi_design,
+      material_khusus: form.material_khusus,
+      kebutuhan_tambahan: form.kebutuhan_tambahan,
     })
+    })
+
     const data = await res.json()
     if (!res.ok) throw new Error(data.message || 'Gagal menyimpan.')
     alert('Data berhasil disimpan!')
@@ -281,8 +424,13 @@ const handleSimpan = async () => {
 }
 
 const handleEstimasi = async () => {
-  if (!form.luasRuangan || !form.jenisProyek || !form.tingkatKerumitan) {
-    alert('Harap isi minimal Luas Ruangan, Jenis Proyek, dan Tingkat Kerumitan.')
+  if (
+    !form.luas_area ||
+    !form.jenis_proyek ||
+    !form.tingkat_kerumitan ||
+    form.jenis_ruangan.length === 0
+  ) {
+    alert('Lengkapi semua data wajib termasuk Jenis Ruangan!')
     return
   }
 
@@ -290,29 +438,38 @@ const handleEstimasi = async () => {
   estimasiResult.value = ''
 
   try {
-    const token = localStorage.getItem('token')
-    const res = await fetch('http://localhost:8081/estimasi/proses' ,{
+    const res = await fetch('http://127.0.0.1:5000/predict', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({
-        luas_ruangan:      Number(form.luasRuangan),
-        jenis_proyek:      form.jenisProyek,
-        tingkat_kerumitan: form.tingkatKerumitan,
-        durasi:            Number(form.durasi),
-        lokasi:            form.lokasi,
-        konsep:            form.konsep,
-        material:          form.material,
+        luas_area: Number(form.luas_area),
+        jenis_proyek: form.jenis_proyek,
+        jenis_ruangan: form.jenis_ruangan.join(', '),
+        tingkat_kerumitan: form.tingkat_kerumitan,
+        durasi_pengerjaan: Number(form.durasi_pengerjaan || 0),
+        lokasi_proyek: form.lokasi_proyek,
+        spesifikasi_design: form.spesifikasi_design,
+        material_khusus: form.material_khusus,
+        kebutuhan_tambahan: form.kebutuhan_tambahan,
       }),
     })
+
+    if (!res.ok) {
+      throw new Error('Gagal mengambil estimasi dari server ML')
+    }
+
     const data = await res.json()
-    if (!res.ok) throw new Error(data.message || 'Gagal memproses estimasi.')
-    // Asumsi backend return { estimasi: 'Rp 45.000.000 - Rp 60.000.000' }
-    estimasiResult.value = data.estimasi || data.result || 'Estimasi tidak tersedia.'
+
+    estimasiResult.value =
+      data.estimasi ||
+      data.result ||
+      'Estimasi tidak tersedia'
+
   } catch (err) {
-    alert(err.message || 'Tidak dapat terhubung ke server.')
+    console.error(err)
+    alert('Gagal terhubung ke server ML (pastikan Python berjalan)')
   } finally {
     isEstimating.value = false
   }
@@ -660,6 +817,80 @@ const handleEstimasi = async () => {
   margin: 0;
 }
 
+/* ── Field (SAMAKAN DENGAN form-group) ── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2C2C2C;
+}
+
+/* wrapper select */
+.field__select-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* select style disamakan */
+.field__select {
+  width: 100%;
+  border: 1.5px solid #DDDDDD;
+  border-radius: 6px;
+  padding: 13px 40px 13px 16px;
+  font-size: 13.5px;
+  font-family: 'Montserrat', sans-serif;
+  color: #333;
+  background: #FFFFFF;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.field__select:focus {
+  border-color: #C8A135;
+}
+
+/* input tambahan (jenis proyek lainnya) */
+.field__input {
+  width: 100%;
+  border: 1.5px solid #DDDDDD;
+  border-radius: 6px;
+  padding: 13px 16px;
+  font-size: 13.5px;
+  font-family: 'Montserrat', sans-serif;
+  color: #333;
+  background: #FFFFFF;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.field__input:focus {
+  border-color: #C8A135;
+}
+
+/* arrow */
+.field__select-arrow {
+  position: absolute;
+  right: 14px;
+  top: 16px;
+  color: #888;
+  pointer-events: none;
+}
+
+.multiselect__dropdown {
+  z-index: 999; /* biar tidak ketutup */
+}
+
 /* ── Spinner ── */
 .btn-spinner {
   width: 18px;
@@ -691,6 +922,93 @@ const handleEstimasi = async () => {
     position: static;
     order: -1;
   }
+}
+
+/* MULTISELECT WRAPPER */
+.multiselect {
+  position: relative;
+  width: 100%;
+}
+
+/* TRIGGER = MIRIP SELECT */
+.multiselect__trigger {
+  width: 100%;
+  border: 1.5px solid #DDDDDD;
+  border-radius: 6px;
+  padding: 13px 40px 13px 16px;
+  font-size: 13.5px;
+  font-family: 'Montserrat', sans-serif;
+  background: #FFFFFF;
+  color: #333;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* HOVER */
+.multiselect__trigger:hover {
+  border-color: #C8A135;
+}
+
+/* FOCUS */
+.multiselect__trigger:focus {
+  border-color: #C8A135;
+  box-shadow: 0 0 0 2px rgba(200,161,53,0.15);
+}
+
+/* TEXT */
+.multiselect__placeholder {
+  color: #BBBBBB;
+}
+
+.multiselect__value {
+  color: #333;
+}
+
+/* ARROW */
+.multiselect__arrow {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  pointer-events: none;
+}
+
+/* DROPDOWN */
+.multiselect__dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border: 1.5px solid #DDDDDD;
+  border-radius: 6px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* OPTION */
+.multiselect__option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.multiselect__option:hover {
+  background: #F8F8F8;
+}
+
+.multiselect__option input {
+  accent-color: #C8A135;
 }
 
 @media (max-width: 560px) {
